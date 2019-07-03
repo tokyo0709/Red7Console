@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29025.244
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Red7.Game", "Red7Console\Red7.Game.csproj", "{8B40BEDF-B029-41B3-8804-8F3DFA5C2C61}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Red7.Core", "Red7.Core\Red7.Core.csproj", "{78FA8130-1B25-453F-86BE-99D2E5927483}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8B40BEDF-B029-41B3-8804-8F3DFA5C2C61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B40BEDF-B029-41B3-8804-8F3DFA5C2C61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B40BEDF-B029-41B3-8804-8F3DFA5C2C61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B40BEDF-B029-41B3-8804-8F3DFA5C2C61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78FA8130-1B25-453F-86BE-99D2E5927483}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78FA8130-1B25-453F-86BE-99D2E5927483}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78FA8130-1B25-453F-86BE-99D2E5927483}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78FA8130-1B25-453F-86BE-99D2E5927483}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {030122F9-6981-448F-A981-C2DE1CDAF4C8}
+	EndGlobalSection
+EndGlobal
