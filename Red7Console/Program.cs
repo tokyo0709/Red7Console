@@ -1,4 +1,5 @@
 ﻿using Red7.Core;
+using Red7.Core.Helpers;
 using Red7.Core.Infrastructure;
 using System;
 using System.Drawing;
@@ -16,21 +17,25 @@ namespace Red7Console
             red7Game.AddPlayer(new Player(2, "Callen"));
             red7Game.BeginGame();
 
-            Console.WriteLine("Anthony's Board:\r\n");
-
-            System.Console.WriteLine("Palette:");
-            foreach (var item in red7Game.Players.Where(x => x.Id == 1).First().Palette.Cards)
+            foreach (var player in red7Game.Players)
             {
-                
-            }
+                Console.WriteLine($"{player.Name}'s Board:\r\n", Color.White);
 
-            Console.WriteLine("1", Color.Red);
-            Console.WriteLine("2", Color.Orange);
-            Console.WriteLine("3", Color.Yellow);
-            Console.WriteLine("4", Color.Green);
-            Console.WriteLine("5", Color.LightBlue);
-            Console.WriteLine("6", Color.Blue);
-            Console.WriteLine("7", Color.Indigo);
+                Console.WriteLine("Palette:", Color.White);
+                foreach (var item in player.Palette.Cards)
+                {
+                    Console.Write($"{item.Value} ", item.Color.GetConsoleColor());
+                }
+
+                Console.WriteLine("\r\n\r\nHand:", Color.White);
+                foreach (var item in player.Hand.Cards)
+                {
+                    Console.Write($"{item.Value} ", item.Color.GetConsoleColor());
+                }
+
+                Console.WriteLine("\r\n");
+            }
+            
             Console.ReadLine();
         }
     }
