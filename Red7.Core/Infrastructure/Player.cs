@@ -8,6 +8,7 @@ namespace Red7.Core.Infrastructure
         public string Name { get; }
         public Hand Hand { get; }
         public Palette Palette { get; }
+        public bool ActivePlayer { get; set; }
 
         public Player(int id, string name)
         {
@@ -15,6 +16,7 @@ namespace Red7.Core.Infrastructure
             Name = name;
             Hand = new Hand(id);
             Palette = new Palette(id);
+            ActivePlayer = false;
         }
 
         public void AddCardToPalette(Card card)

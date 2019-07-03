@@ -14,7 +14,8 @@ namespace Red7.Core
         public List<Player> Players { get; set; } = new List<Player>();
         public List<Rule> Rules { get; set; } = new List<Rule>();
         public DrawDeck Deck { get; set; } = new DrawDeck();
-        public Canvas Canvas { get; set; } = new Canvas() { Cards = new List<Card>() { new Card() { Color = Enums.Color.Red, Value = 0, Action = Enums.Action.None } } };
+        public Canvas Canvas { get; set; } = new Canvas();
+        //public List<ColorRule> ColorRules { get; set; } = new List<ColorRule>();
         public bool GameInProgress { get; set; } = false;
         private int StartingHandSize { get; } = 7;
 
@@ -23,6 +24,8 @@ namespace Red7.Core
             Rules.Add(new Rule { AdvancedRule = AdvancedRule.DiscardDraw, Enabled = false });
             Rules.Add(new Rule { AdvancedRule = AdvancedRule.Scoring, Enabled = false });
             Rules.Add(new Rule { AdvancedRule = AdvancedRule.Action, Enabled = false });
+
+            //ColorRules = Seeder.GenerateColorRules();
 
             Deck.Cards.AddRange(Seeder.GenerateCards());
             Deck.Shuffle();
@@ -61,11 +64,27 @@ namespace Red7.Core
             }
         }
 
+        private void SetStartingPlayer()
+        {
+            foreach (var player in Players)
+            {
+                var canvasCard = Canvas.GetActiveCanvasCard();
+
+                var isWinning = GameLogic.IsWinning(canvasCard.Color, player.Palette, Players.Where(x => x.Id != player.Id).ToList().Select(x => x.Palette).ToList());
+                if (isWinning)
+                {
+                    var nextPlayer = GetNextPlayer(player);
+                    nextPlayer.ActivePlayer = true;
+                }
+            }
+        }
+
         public void BeginGame()
         {
             GameInProgress = true;
             DealHands();
             SetStartingPalettes();
+            SetStartingPlayer();
         }
 
         public void EnableDiscardDrawRule()
@@ -97,5 +116,24 @@ namespace Red7.Core
         {
             Rules.Where(x => x.AdvancedRule == AdvancedRule.Action).First().Enabled = false;
         }
+
+        public Player GetNextPlayer(Player player)
+        {
+            int index = Players.FindIndex(x => x.Id == player.Id);
+
+            if (index == -1) throw new Exception("Player not found.");
+
+            if (Players.Count == index + 1)
+                return Players.First();
+            else
+                return Players.ElementAt(index + 1);
+        }
+
+        //public ColorRule GetRuleByColor(Color color)
+        //{
+        //    var colorRule = ColorRules.Where(x => x.Color == color).FirstOrDefault();
+        //    if (colorRule == null) throw new Exception($"Color rule for {color.ToString()} does not exist.");
+        //    return colorRule;
+        //}
     }
 }

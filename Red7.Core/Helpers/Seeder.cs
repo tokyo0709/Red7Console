@@ -1,5 +1,6 @@
 ﻿using Red7.Core.Components;
 using Red7.Core.Enums;
+using Red7.Core.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -41,5 +42,19 @@ namespace Red7.Core.Helpers
 
             return cards;
         }
+
+        //public static List<ColorRule> GenerateColorRules()
+        //{
+        //    return new List<ColorRule>()
+        //    {
+        //        new ColorRule(Color.Red, "Highest Card"),
+        //        new ColorRule(Color.Orange, "Most Of One Number"),
+        //        new ColorRule(Color.Yellow, "Most Of One Color"),
+        //        new ColorRule(Color.Green, "Most Even Cards"),
+        //        new ColorRule(Color.Blue, "Most Different Colors"),
+        //        new ColorRule(Color.Indigo, "Most Cards In A Row"),
+        //        new ColorRule(Color.Violet, "Most Cards Below 4")
+        //    };
+        //}
     }
 }

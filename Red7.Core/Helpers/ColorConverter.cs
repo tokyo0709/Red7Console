@@ -23,7 +23,7 @@ namespace Red7.Core.Helpers
                 case Enums.Color.Indigo:
                     return System.Drawing.Color.Blue;
                 case Enums.Color.Violet:
-                    return System.Drawing.Color.Indigo;
+                    return System.Drawing.Color.Purple;
                 default:
                     throw new Exception("Invalid color to convert.");
             }

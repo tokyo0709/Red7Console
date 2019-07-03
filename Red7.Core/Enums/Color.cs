@@ -6,12 +6,12 @@ namespace Red7.Core.Enums
 {
     public enum Color
     {
-        Red,
-        Orange,
-        Yellow,
-        Green,
-        Blue,
+        Violet,
         Indigo,
-        Violet
+        Blue,
+        Green,
+        Yellow,
+        Orange,
+        Red
     }
 }
