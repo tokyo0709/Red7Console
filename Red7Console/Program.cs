@@ -21,7 +21,7 @@ namespace Red7Console
             System.Console.WriteLine("Palette:");
             foreach (var item in red7Game.Players.Where(x => x.Id == 1).First().Palette.Cards)
             {
-                Console.Write()
+                
             }
 
             Console.WriteLine("1", Color.Red);
