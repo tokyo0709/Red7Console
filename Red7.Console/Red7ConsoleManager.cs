@@ -55,7 +55,7 @@ namespace Red7.ConsoleManager
             OtherPlayerBoardsMasked = true;
 
             Console.SetWindowSize(WidthValue, HeightValue);
-            DrawBorder(Color.FloralWhite); 
+            DrawBorder(Color.FloralWhite, 0, 0, WidthValue, BoardHeightValue); 
         }
 
         private static void DrawBoxedWord(int left, int top, string word, Color color)
@@ -190,63 +190,63 @@ namespace Red7.ConsoleManager
             Console.CursorVisible = true;//Show cursor back
         }
 
-        private static void DrawBorder(Color color)
+        private static void DrawBorder(Color color, int originX, int originY, int width, int height)
         {
             // i = Column
-            for (int i = 0; i < WidthValue; i++)
+            for (int i = originX; i < width + originX; i++)
             {
                 // j = Row
-                for (int j = 0; j < BoardHeightValue; j++)
+                for (int j = originY; j < height + originY; j++)
                 {
-                    if (j == 0)
+                    if (j == originY)
                     {
-                        if (i == 0)
+                        if (i == originX)
                             WriteAt(i, j, "┌", color);
-                        else if (i == WidthValue - 1)
+                        else if (i == width - 1)
                             WriteAt(i, j, "┐", color);
                         else
                             WriteAt(i, j, "─", color);
                     }
-                    else if (j == 1)
+                    else if (j == originY + 1)
                     {
-                        if (i == 0)
+                        if (i == originX)
                             WriteAt(i, j, "│", color);
-                        else if (i == 2)
+                        else if (i == originX + 2)
                             WriteAt(i, j, "┌", color);
-                        else if (i == WidthValue - 1)
+                        else if (i == width - 1)
                             WriteAt(i, j, "│", color);
-                        else if (i == WidthValue - 3)
+                        else if (i == width - 3)
                             WriteAt(i, j, "┐", color);
-                        else if (i != 1 && i != WidthValue - 2)
+                        else if (i != originX + 1 && i != width - 2)
                             WriteAt(i, j, "─", color);
                     }
-                    else if (j == BoardHeightValue - 1)
+                    else if (j == height - 1)
                     {
-                        if (i == 0)
+                        if (i == originX)
                             WriteAt(i, j, "└", color);
-                        else if (i == WidthValue - 1)
+                        else if (i == width - 1)
                             WriteAt(i, j, "┘", color);
                         else
                             WriteAt(i, j, "─", color);
                     }
-                    else if (j == BoardHeightValue - 2)
+                    else if (j == height - 2)
                     {
-                        if (i == 0)
+                        if (i == originX)
                             WriteAt(i, j, "│", color);
-                        else if (i == 2)
+                        else if (i == originX + 2)
                             WriteAt(i, j, "└", color);
-                        else if (i == WidthValue - 1)
+                        else if (i == width - 1)
                             WriteAt(i, j, "│", color);
-                        else if (i == WidthValue - 3)
+                        else if (i == width - 3)
                             WriteAt(i, j, "┘", color);
-                        else if (i != 1 && i != WidthValue - 2)
+                        else if (i != originX + 1 && i != width - 2)
                             WriteAt(i, j, "─", color);
                     }
                     else
                     {
-                        if (i == 0 || i == 2)
+                        if (i == originX || i == originX + 2)
                             WriteAt(i, j, "│", color);
-                        else if (i == WidthValue - 1 || i == WidthValue - 3)
+                        else if (i == width - 1 || i == width - 3)
                             WriteAt(i, j, "│", color);
                     }
                 }
