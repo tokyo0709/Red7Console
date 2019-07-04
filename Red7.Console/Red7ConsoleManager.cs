@@ -26,13 +26,35 @@ namespace Red7.ConsoleManager
             WidthValue = playerCount * 50;
         }
 
-        public static void InitializeConsole(int playerCount)
+        public static void InitializeConsoleSetup(Red7Game red7Game)
+        {
+            var root = GetApplicationRoot();
+            string newPath = Path.GetFullPath(Path.Combine(root, @"..\"));
+
+            FigletFont font = FigletFont.Load($"{newPath}/Red7.Console/FigletFonts/standard.flf");
+            Figlet figlet = new Figlet(font);
+
+            Console.WriteLine(figlet.ToAscii("Red Seven"), Color.Red);
+            Console.ReadLine();
+        }
+        
+        public static string GetApplicationRoot()
+        {
+            var exePath = Path.GetDirectoryName(System.Reflection
+                              .Assembly.GetExecutingAssembly().CodeBase);
+            Regex appPathMatcher = new Regex(@"(?<!fil)[A-Za-z]:\\+[\S\s]*?(?=\\+bin)");
+            var appRoot = appPathMatcher.Match(exePath).Value;
+            return appRoot;
+        }
+
+        public static void InitializeConsoleGame(int playerCount)
         {
             Console.Clear();
 
             SetBorderValues(playerCount);
             //OtherPlayerBoardsMasked = true;
-            
+
+            Console.SetWindowSize(WidthValue, HeightValue);
             DrawBorder(Color.FloralWhite); 
         }
 
@@ -170,8 +192,6 @@ namespace Red7.ConsoleManager
 
         private static void DrawBorder(Color color)
         {
-            Console.SetWindowSize(WidthValue, HeightValue);
-
             // i = Column
             for (int i = 0; i < WidthValue; i++)
             {

@@ -24,30 +24,12 @@ namespace Red7Console
             red7Game.BeginGame();
 
             if (red7Game.Players.Where(x => x.ActivePlayer == true).Count() > 1) throw new Exception("There should not be more than one active player.");
-
-
-            var root = GetApplicationRoot();
-            string newPath = Path.GetFullPath(Path.Combine(root, @"..\"));
-
-            FigletFont font = FigletFont.Load($"{newPath}/Red7.Console/FigletFonts/standard.flf");
-            Figlet figlet = new Figlet(font);
-
-            Console.WriteLine(figlet.ToAscii("Red Seven"), Color.Red);
-            Console.ReadLine();
-
-            Red7ConsoleManager.InitializeConsole(red7Game.Players.Count);
+            
+            Red7ConsoleManager.InitializeConsoleSetup(red7Game);
+            Red7ConsoleManager.InitializeConsoleGame(red7Game.Players.Count);
             Red7ConsoleManager.DrawBoards(red7Game);
 
             Console.ReadLine();
-        }
-        
-        public static string GetApplicationRoot()
-        {
-            var exePath = Path.GetDirectoryName(System.Reflection
-                              .Assembly.GetExecutingAssembly().CodeBase);
-            Regex appPathMatcher = new Regex(@"(?<!fil)[A-Za-z]:\\+[\S\s]*?(?=\\+bin)");
-            var appRoot = appPathMatcher.Match(exePath).Value;
-            return appRoot;
         }
 
     }
