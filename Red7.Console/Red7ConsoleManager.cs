@@ -1,8 +1,13 @@
-﻿using Red7.Core;
+﻿using Colorful;
+using Red7.Core;
 using Red7.Core.Helpers;
+using Red7.Core.Infrastructure;
 using System;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using Console = Colorful.Console;
 
 namespace Red7.ConsoleManager
@@ -10,9 +15,11 @@ namespace Red7.ConsoleManager
     public static class Red7ConsoleManager
     {
         private static int HeightValue { get; set; } = 40;
-        private static int BoardHeightValue { get; set; } = 20;
+        private static int BoardHeightValue { get; set; } = 24;
         private static int WidthValue { get; set; } = 200;
         private static int PlayerBoardWidth { get; set; } = 50;
+        private static int CardWidth { get; set; } = 3;
+        private static bool OtherPlayerBoardsMasked { get; set; } = false;
         
         private static void SetBorderValues(int playerCount)
         {
@@ -21,99 +28,133 @@ namespace Red7.ConsoleManager
 
         public static void InitializeConsole(int playerCount)
         {
+            Console.Clear();
+
             SetBorderValues(playerCount);
+            //OtherPlayerBoardsMasked = true;
+            
+            DrawBorder(Color.FloralWhite); 
+        }
 
-            // Max 240/63
-            DrawBorder(Color.FloralWhite);
+        private static void DrawBoxedWord(int left, int top, string word, Color color)
+        {
+            // Player Name
+            for (int l = 0; l <= 2; l++)
+            {
+                if (l == 0) // Box tops
+                {
+                    Console.SetCursorPosition(left, top);
+                    Console.Write("┌", color);
 
-            //Console.SetCursorPosition(3, 2);
-            //Console.WriteLine("┌─┐", Color.Red);
-            //Console.SetCursorPosition(3, 3);
-            //Console.WriteLine("│1│", Color.Red);
-            //Console.SetCursorPosition(3, 4);
-            //Console.WriteLine("└─┘", Color.Red);
-            //Console.ReadLine();
+                    foreach (var chr in word)
+                    {
+                        Console.Write("─", color);
+                    }
+
+                    Console.Write("┐", color);
+                }
+                else if (l == 1) // Box contents
+                {
+                    Console.SetCursorPosition(left, top + 1);
+                    Console.Write($"│{word}│", color);
+                }
+                else if (l == 2) // Box bottoms
+                {
+                    Console.SetCursorPosition(left, top + 2);
+
+                    Console.Write("└", color);
+
+                    foreach (var chr in word)
+                    {
+                        Console.Write("─", color);
+                    }
+
+                    Console.Write("┘", color);
+                }
+            }
         }
 
         public static void DrawBoards(Red7Game red7Game)
         {
             var activePlayer = red7Game.Players.Where(x => x.ActivePlayer == true).First();
 
+            // Loop through players and draw individual player boards
             for (int i = 0; i < red7Game.Players.Count; i++)
             {
                 var player = red7Game.Players.ElementAt(i);
 
-                Console.SetCursorPosition(3  +(i * PlayerBoardWidth), 2);
-                Console.WriteLine($"{player.Name}", Color.LightCyan);
-
-                Console.SetCursorPosition(3 + (i * PlayerBoardWidth), 4);
+                DrawBoxedWord(4 + (i * PlayerBoardWidth), 2, player.Name, player.ActivePlayer ? Color.Yellow : Color.White);
+                
+                // Draw Palette cards
+                Console.SetCursorPosition(4 + (i * PlayerBoardWidth), 6);
                 Console.WriteLine("Palette:", Color.White);
-                Console.SetCursorPosition(3 + (i * PlayerBoardWidth), 5);
-                foreach (var item in player.Palette.Cards)
+                
+                foreach (var card in player.Palette.Cards)
                 {
-                    Console.Write("|", Color.White);
-                    Console.Write($"{item.Value}", item.Color.GetConsoleColor());
-                    Console.Write("| ", Color.White);
+                    // Palette boxed cards
+                    for (int j = 0; j <= 2; j++)
+                    {
+                        if (j == 0) // Box tops
+                        {
+                            Console.SetCursorPosition(4 + (i * PlayerBoardWidth), 7);
+                            Console.Write("┌─┐", card.Color.GetConsoleColor());
+                        }
+                        else if (j == 1) // Box contents
+                        {
+                            Console.SetCursorPosition(4 + (i * PlayerBoardWidth), 8);
+                            Console.Write($"│{card.Value}│", card.Color.GetConsoleColor());
+                        }
+                        else if (j == 2) // Box bottoms
+                        {
+                            Console.SetCursorPosition(4 + (i * PlayerBoardWidth), 9);
+                            Console.Write("└─┘", card.Color.GetConsoleColor());
+                        }
+                    }
                 }
 
-                Console.SetCursorPosition(3 + (i * PlayerBoardWidth), 7);
+                // Draw hand cards
+                Console.SetCursorPosition(4 + (i * PlayerBoardWidth), 11);
                 Console.WriteLine("Hand:", Color.White);
-                Console.SetCursorPosition(3 + (i * PlayerBoardWidth), 8);
-                foreach (var item in player.Hand.Cards)
+                
+                for (int k = 0; k < player.Hand.Cards.Count; k++)
                 {
-                    Console.Write("|", Color.White);
-                    if (player.Id != activePlayer.Id)
+                    var card = player.Hand.Cards.ElementAt(k);
+                    var cardColor = OtherPlayerBoardsMasked && !player.ActivePlayer ? Color.White : card.Color.GetConsoleColor();
+                    var cardValue = OtherPlayerBoardsMasked && !player.ActivePlayer ? "│X│" : $"│{card.Value}│";
+
+                    // Hand boxed cards
+                    for (int j = 0; j <= 2; j++)
                     {
-                        Console.Write("X", Color.White);
+                        if (j == 0) // Box tops
+                        {
+                            Console.SetCursorPosition(4 + (k * CardWidth) + (i * PlayerBoardWidth), 12);
+                            Console.Write("┌─┐", cardColor);
+                        }
+                        else if (j == 1) // Box contents
+                        {
+                            Console.SetCursorPosition(4 + (k * CardWidth) + (i * PlayerBoardWidth), 13);
+                            Console.Write(cardValue, cardColor);
+                        }
+                        else if (j == 2) // Box bottoms
+                        {
+                            Console.SetCursorPosition(4 + (k * CardWidth) + (i * PlayerBoardWidth), 14);
+                            Console.Write("└─┘", cardColor);
+                        }
                     }
-                    else
-                    {
-                        Console.Write($"{item.Value}", item.Color.GetConsoleColor());
-                    }
-                    Console.Write("| ", Color.White);
                 }
-            }
+            } // End Player Board Loop
 
-            //foreach (var player in red7Game.Players)
-            //{
-            //    Console.SetCursorPosition(3, 2);
-            //    Console.WriteLine($"{player.Name}'s Board:\r\n", Color.LightCyan);
+            DrawBoxedWord(4, 16, "Draw Deck", Color.White);
+            DrawBoxedWord(16, 16, $"{red7Game.Deck.Cards.Count}", Color.White);
 
-            //    Console.SetCursorPosition(3, 4);
-            //    Console.WriteLine("Palette:", Color.White);
-            //    Console.SetCursorPosition(3, 5);
-            //    foreach (var item in player.Palette.Cards)
-            //    {
-            //        Console.Write("|", Color.White);
-            //        Console.Write($"{item.Value}", item.Color.GetConsoleColor());
-            //        Console.Write("| ", Color.White);
-            //    }
+            var activeCanvasCard = red7Game.Canvas.GetActiveCanvasCard();
+            DrawBoxedWord(4, 19, "Canvas", Color.White);
+            DrawBoxedWord(14, 19, $"{activeCanvasCard.Value}", ColorConverter.GetConsoleColor(activeCanvasCard.Color));
+            DrawBoxedWord(19, 19, $"{ColorRules.GetRuleByColor(activeCanvasCard.Color).RuleDescription}", ColorConverter.GetConsoleColor(activeCanvasCard.Color));
 
-            //    Console.SetCursorPosition(3, 7);
-            //    Console.WriteLine("Hand:", Color.White);
-            //    Console.SetCursorPosition(3, 8);
-            //    foreach (var item in player.Hand.Cards)
-            //    {
-            //        Console.Write("|", Color.White);
-            //        if (player.Id != activePlayer.Id)
-            //        {
-            //            Console.Write("X", Color.White);
-            //        }
-            //        else
-            //        {
-            //            Console.Write($"{item.Value}", item.Color.GetConsoleColor());
-            //        }
-            //        Console.Write("| ", Color.White);
-            //    }
-            //}
+            Console.CursorVisible = false;
 
-            Console.WriteLine("Canvas:", Color.LightGray);
-            Console.Write("|", Color.White);
-            Console.Write($"{red7Game.Canvas.GetActiveCanvasCard().Value}", red7Game.Canvas.GetActiveCanvasCard().Color.GetConsoleColor());
-            Console.Write("|", Color.White);
-
-
-            Console.WriteLine($"\r\n\r\n{red7Game.Players.Where(x => x.ActivePlayer == true).First().Name}'s turn.", Color.White);
+            Console.ReadLine();
         }
 
         private static void WriteAt(int left, int top, string s, Color color)
@@ -131,8 +172,10 @@ namespace Red7.ConsoleManager
         {
             Console.SetWindowSize(WidthValue, HeightValue);
 
+            // i = Column
             for (int i = 0; i < WidthValue; i++)
             {
+                // j = Row
                 for (int j = 0; j < BoardHeightValue; j++)
                 {
                     if (j == 0)
@@ -148,13 +191,13 @@ namespace Red7.ConsoleManager
                     {
                         if (i == 0)
                             WriteAt(i, j, "│", color);
-                        else if (i == 1)
+                        else if (i == 2)
                             WriteAt(i, j, "┌", color);
                         else if (i == WidthValue - 1)
                             WriteAt(i, j, "│", color);
-                        else if (i == WidthValue - 2)
+                        else if (i == WidthValue - 3)
                             WriteAt(i, j, "┐", color);
-                        else
+                        else if (i != 1 && i != WidthValue - 2)
                             WriteAt(i, j, "─", color);
                     }
                     else if (j == BoardHeightValue - 1)
@@ -170,20 +213,20 @@ namespace Red7.ConsoleManager
                     {
                         if (i == 0)
                             WriteAt(i, j, "│", color);
-                        else if (i == 1)
+                        else if (i == 2)
                             WriteAt(i, j, "└", color);
                         else if (i == WidthValue - 1)
                             WriteAt(i, j, "│", color);
-                        else if (i == WidthValue - 2)
+                        else if (i == WidthValue - 3)
                             WriteAt(i, j, "┘", color);
-                        else
+                        else if (i != 1 && i != WidthValue - 2)
                             WriteAt(i, j, "─", color);
                     }
                     else
                     {
-                        if (i == 0 || i == 1)
+                        if (i == 0 || i == 2)
                             WriteAt(i, j, "│", color);
-                        else if (i == WidthValue - 1 || i == WidthValue - 2)
+                        else if (i == WidthValue - 1 || i == WidthValue - 3)
                             WriteAt(i, j, "│", color);
                     }
                 }

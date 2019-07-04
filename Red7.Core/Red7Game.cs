@@ -15,7 +15,6 @@ namespace Red7.Core
         public List<Rule> Rules { get; set; } = new List<Rule>();
         public DrawDeck Deck { get; set; } = new DrawDeck();
         public Canvas Canvas { get; set; } = new Canvas();
-        //public List<ColorRule> ColorRules { get; set; } = new List<ColorRule>();
         public bool GameInProgress { get; set; } = false;
         private int StartingHandSize { get; } = 7;
 
@@ -128,12 +127,5 @@ namespace Red7.Core
             else
                 return Players.ElementAt(index + 1);
         }
-
-        //public ColorRule GetRuleByColor(Color color)
-        //{
-        //    var colorRule = ColorRules.Where(x => x.Color == color).FirstOrDefault();
-        //    if (colorRule == null) throw new Exception($"Color rule for {color.ToString()} does not exist.");
-        //    return colorRule;
-        //}
     }
 }
