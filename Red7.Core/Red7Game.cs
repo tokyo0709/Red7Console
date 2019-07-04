@@ -23,8 +23,7 @@ namespace Red7.Core
             Rules.Add(new Rule { AdvancedRule = AdvancedRule.DiscardDraw, Enabled = false });
             Rules.Add(new Rule { AdvancedRule = AdvancedRule.Scoring, Enabled = false });
             Rules.Add(new Rule { AdvancedRule = AdvancedRule.Action, Enabled = false });
-
-            //ColorRules = Seeder.GenerateColorRules();
+            
 
             Deck.Cards.AddRange(Seeder.GenerateCards());
             Deck.Shuffle();

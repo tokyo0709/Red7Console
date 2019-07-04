@@ -52,7 +52,7 @@ namespace Red7.ConsoleManager
             Console.Clear();
 
             SetBorderValues(playerCount);
-            //OtherPlayerBoardsMasked = true;
+            OtherPlayerBoardsMasked = true;
 
             Console.SetWindowSize(WidthValue, HeightValue);
             DrawBorder(Color.FloralWhite); 
