@@ -1,5 +1,6 @@
 ﻿using Colorful;
 using Red7.ConsoleManager.Helpers;
+using Red7.ConsoleManager.Models;
 using Red7.Core;
 using Red7.Core.Helpers;
 using Red7.Core.Infrastructure;
@@ -22,6 +23,16 @@ namespace Red7.ConsoleManager
         private static int PlayerBoardWidth { get; set; } = 50;
         private static int CardWidth { get; set; } = 3;
         private static bool OtherPlayerBoardsMasked { get; set; } = false;
+        private static SetupMenu SetupMenu { get; } = new SetupMenu
+        {
+            MenuOptions = new List<MenuOption>()
+            {
+                new MenuOption(Option.AddPlayers, true),
+                new MenuOption(Option.DiscardDrawRule, false),
+                new MenuOption(Option.ScoringRule, false),
+                new MenuOption(Option.ActionRule, false)
+            }
+        };
         
         private static void SetBorderValues(int playerCount)
         {
@@ -44,28 +55,82 @@ namespace Red7.ConsoleManager
             ConsoleHelper.DrawBorder(Color.Red, 1, 6, 65, 34, true);
             ConsoleHelper.DrawBorder(Color.White, 69, 0, 50, 40, true);
 
-            //Console.SetCursorPosition(4, 9);
-            ConsoleHelper.WriteWordWrapAt(58, 5, 9, "Welcome to the game Red 7. Before we get started begin by adding some players and setting up your game settings.", Color.White);
-            ConsoleHelper.WriteWordWrapAt(58, 5, 12, "1) Add Players", Color.White);
-
-            if (!red7Game.Rules.Where(x => x.AdvancedRule == Core.Enums.AdvancedRule.DiscardDraw).First().Enabled)
-                ConsoleHelper.WriteWordWrapAt(58, 5, 14, "2) Enable Discard Draw Rule (Draw when playing to the Canvas and the number of cards in your palette is less than the value of the card played)", Color.White);
-            else
-                ConsoleHelper.WriteWordWrapAt(58, 5, 14, "2) Disable Discard Draw Rule (Draw when playing to the Canvas and the number of cards in your palette is less than the value of the card played)", Color.White);
-
-            if (!red7Game.Rules.Where(x => x.AdvancedRule == Core.Enums.AdvancedRule.Scoring).First().Enabled)
-                ConsoleHelper.WriteWordWrapAt(58, 5, 18, "3) Enable Scoring Rule (Score all the cards that meet the current rule at the end of a round)", Color.White);
-            else
-                ConsoleHelper.WriteWordWrapAt(58, 5, 18, "3) Disable Scoring Rule (Score all the cards that meet the current rule at the end of a round)", Color.White);
-
-            if (!red7Game.Rules.Where(x => x.AdvancedRule == Core.Enums.AdvancedRule.Action).First().Enabled)
-                ConsoleHelper.WriteWordWrapAt(58, 5, 21, "4) Enable Action Rule (Forced actions when playing odd numbered cards to your palette)", Color.White);
-            else
-                ConsoleHelper.WriteWordWrapAt(58, 5, 21, "4) Enable Action Rule (Forced actions when playing odd numbered cards to your palette)", Color.White);
-
+            WriteMenu(red7Game);
             ConsoleHelper.DrawBorder(Color.White, 5, 32, 57, 6);
+            
+            while (!Console.KeyAvailable)
+            {
+                ConsoleKeyInfo keyInfo = Console.ReadKey();
+                if (keyInfo.Key == ConsoleKey.UpArrow)
+                {
+                    var index = SetupMenu.MenuOptions.FindIndex(y => y.Active);
+                    SetupMenu.MenuOptions.ElementAt(index).Active = false;
+                    if (index == 0)
+                        SetupMenu.MenuOptions.ElementAt(SetupMenu.MenuOptions.Count - 1).Active = true;
+                    else
+                        SetupMenu.MenuOptions.ElementAt(index - 1).Active = true;
 
-            Console.ReadLine();
+                    WriteMenu(red7Game);
+                }
+                else if (keyInfo.Key == ConsoleKey.DownArrow)
+                {
+                    var index = SetupMenu.MenuOptions.FindIndex(y => y.Active);
+                    SetupMenu.MenuOptions.ElementAt(index).Active = false;
+                    if (SetupMenu.MenuOptions.Count - 1 > index)
+                        SetupMenu.MenuOptions.ElementAt(index + 1).Active = true;
+                    else
+                        SetupMenu.MenuOptions.ElementAt(0).Active = true;
+
+                    WriteMenu(red7Game);
+                }
+                else if (keyInfo.Key == ConsoleKey.Escape)
+                {
+                    break;
+                }
+            }
+        }
+
+        private static void WriteMenu(Red7Game game)
+        {
+            WriteIntroduction(58, 5, 9, Color.White);
+            WriteAddPlayer(58, 5, 12, SetupMenu.MenuOptions.Where(x => x.Option == Option.AddPlayers).First().Active ? Color.Yellow : Color.White);
+            WriteDiscardDrawRule(58, 5, 14, SetupMenu.MenuOptions.Where(x => x.Option == Option.DiscardDrawRule).First().Active ? Color.Yellow : Color.White, game);
+            WriteScoringRule(58, 5, 18, SetupMenu.MenuOptions.Where(x => x.Option == Option.ScoringRule).First().Active ? Color.Yellow : Color.White, game);
+            WriteActionRule(58, 5, 21, SetupMenu.MenuOptions.Where(x => x.Option == Option.ActionRule).First().Active ? Color.Yellow : Color.White, game);
+        }
+
+        private static void WriteIntroduction(int width, int left, int top, Color color)
+        {
+            ConsoleHelper.WriteWordWrapAt(width, left, top, "Welcome to the game Red 7. Before we get started begin by adding some players and setting up your game settings.", color);
+        }
+
+        private static void WriteAddPlayer(int width, int left, int top, Color color)
+        {
+            ConsoleHelper.WriteWordWrapAt(width, left, top, "1) Add Players", color);
+        }
+
+        private static void WriteDiscardDrawRule(int width, int left, int top, Color color, Red7Game game)
+        {
+            if (!game.Rules.Where(x => x.AdvancedRule == Core.Enums.AdvancedRule.DiscardDraw).First().Enabled)
+                ConsoleHelper.WriteWordWrapAt(width, left, top, "2) Enable Discard Draw Rule (Draw when playing to the Canvas and the number of cards in your palette is less than the value of the card played)", color);
+            else
+                ConsoleHelper.WriteWordWrapAt(58, 5, 14, "2) Disable Discard Draw Rule (Draw when playing to the Canvas and the number of cards in your palette is less than the value of the card played)", color);
+        }
+
+        private static void WriteScoringRule(int width, int left, int top, Color color, Red7Game game)
+        {
+            if (!game.Rules.Where(x => x.AdvancedRule == Core.Enums.AdvancedRule.Scoring).First().Enabled)
+                ConsoleHelper.WriteWordWrapAt(58, 5, 18, "3) Enable Scoring Rule (Score all the cards that meet the current rule at the end of a round)", color);
+            else
+                ConsoleHelper.WriteWordWrapAt(58, 5, 18, "3) Disable Scoring Rule (Score all the cards that meet the current rule at the end of a round)", color);
+        }
+
+        private static void WriteActionRule(int width, int left, int top, Color color, Red7Game game)
+        {
+            if (!game.Rules.Where(x => x.AdvancedRule == Core.Enums.AdvancedRule.Action).First().Enabled)
+                ConsoleHelper.WriteWordWrapAt(58, 5, 21, "4) Enable Action Rule (Forced actions when playing odd numbered cards to your palette)", color);
+            else
+                ConsoleHelper.WriteWordWrapAt(58, 5, 21, "4) Enable Action Rule (Forced actions when playing odd numbered cards to your palette)", color);
         }
 
         public static void InitializeConsoleGame(int playerCount)
