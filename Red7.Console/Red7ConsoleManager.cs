@@ -25,18 +25,6 @@ namespace Red7.ConsoleManager
         {
             WidthValue = playerCount * 50;
         }
-
-        public static void InitializeConsoleSetup(Red7Game red7Game)
-        {
-            var root = GetApplicationRoot();
-            string newPath = Path.GetFullPath(Path.Combine(root, @"..\"));
-
-            FigletFont font = FigletFont.Load($"{newPath}/Red7.Console/FigletFonts/standard.flf");
-            Figlet figlet = new Figlet(font);
-
-            Console.WriteLine(figlet.ToAscii("Red Seven"), Color.Red);
-            Console.ReadLine();
-        }
         
         public static string GetApplicationRoot()
         {
@@ -47,6 +35,25 @@ namespace Red7.ConsoleManager
             return appRoot;
         }
 
+        public static void InitializeConsoleSetup(Red7Game red7Game)
+        {
+            Console.SetBufferSize(120, 40);
+            Console.SetWindowSize(120, 40);
+            Console.CursorVisible = false;
+
+            var root = GetApplicationRoot();
+            string newPath = Path.GetFullPath(Path.Combine(root, @"..\"));
+
+            FigletFont font = FigletFont.Load($"{newPath}/Red7.Console/FigletFonts/standard.flf");
+            Figlet figlet = new Figlet(font);
+
+            Console.Write(figlet.ToAscii("Red Seven"), Color.Red);
+            DrawBorder(Color.Red, 1, 6, 65, 34);
+            DrawBorder(Color.White, 69, 0, 50, 40);
+
+            Console.ReadLine();
+        }
+
         public static void InitializeConsoleGame(int playerCount)
         {
             Console.Clear();
@@ -54,6 +61,7 @@ namespace Red7.ConsoleManager
             SetBorderValues(playerCount);
             OtherPlayerBoardsMasked = true;
 
+            Console.SetBufferSize(WidthValue, HeightValue);
             Console.SetWindowSize(WidthValue, HeightValue);
             DrawBorder(Color.FloralWhite, 0, 0, WidthValue, BoardHeightValue); 
         }
@@ -109,7 +117,7 @@ namespace Red7.ConsoleManager
                 
                 // Draw Palette cards
                 Console.SetCursorPosition(4 + (i * PlayerBoardWidth), 6);
-                Console.WriteLine("Palette:", Color.White);
+                Console.Write("Palette:", Color.White);
                 
                 foreach (var card in player.Palette.Cards)
                 {
@@ -183,11 +191,9 @@ namespace Red7.ConsoleManager
         {
             int currentLeft = Console.CursorLeft;
             int currentTop = Console.CursorTop;
-            Console.CursorVisible = false;//Hide cursor
             Console.SetCursorPosition(left, top);
             Console.Write(s, color);
             Console.SetCursorPosition(currentLeft, currentTop);
-            Console.CursorVisible = true;//Show cursor back
         }
 
         private static void DrawBorder(Color color, int originX, int originY, int width, int height)
@@ -202,7 +208,7 @@ namespace Red7.ConsoleManager
                     {
                         if (i == originX)
                             WriteAt(i, j, "┌", color);
-                        else if (i == width - 1)
+                        else if (i == originX + width - 1)
                             WriteAt(i, j, "┐", color);
                         else
                             WriteAt(i, j, "─", color);
@@ -213,40 +219,40 @@ namespace Red7.ConsoleManager
                             WriteAt(i, j, "│", color);
                         else if (i == originX + 2)
                             WriteAt(i, j, "┌", color);
-                        else if (i == width - 1)
+                        else if (i == originX + width - 1)
                             WriteAt(i, j, "│", color);
-                        else if (i == width - 3)
+                        else if (i == originX + width - 3)
                             WriteAt(i, j, "┐", color);
-                        else if (i != originX + 1 && i != width - 2)
+                        else if (i != originX + 1 && i != originX + width - 2)
                             WriteAt(i, j, "─", color);
                     }
-                    else if (j == height - 1)
+                    else if (j == originY + height - 1)
                     {
                         if (i == originX)
                             WriteAt(i, j, "└", color);
-                        else if (i == width - 1)
+                        else if (i == originX + width - 1)
                             WriteAt(i, j, "┘", color);
                         else
                             WriteAt(i, j, "─", color);
                     }
-                    else if (j == height - 2)
+                    else if (j == originY + height - 2)
                     {
                         if (i == originX)
                             WriteAt(i, j, "│", color);
                         else if (i == originX + 2)
                             WriteAt(i, j, "└", color);
-                        else if (i == width - 1)
+                        else if (i == originX + width - 1)
                             WriteAt(i, j, "│", color);
-                        else if (i == width - 3)
+                        else if (i == originX + width - 3)
                             WriteAt(i, j, "┘", color);
-                        else if (i != originX + 1 && i != width - 2)
+                        else if (i != originX + 1 && i != originX + width - 2)
                             WriteAt(i, j, "─", color);
                     }
                     else
                     {
                         if (i == originX || i == originX + 2)
                             WriteAt(i, j, "│", color);
-                        else if (i == width - 1 || i == width - 3)
+                        else if (i == originX + width - 1 || i == originX + width - 3)
                             WriteAt(i, j, "│", color);
                     }
                 }
