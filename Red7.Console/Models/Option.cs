@@ -5,6 +5,7 @@
         AddPlayers,
         DiscardDrawRule,
         ScoringRule,
-        ActionRule
+        ActionRule,
+        GameStart
     }
 }

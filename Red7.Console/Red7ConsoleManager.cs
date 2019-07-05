@@ -30,7 +30,8 @@ namespace Red7.ConsoleManager
                 new MenuOption(Option.AddPlayers, true),
                 new MenuOption(Option.DiscardDrawRule, false),
                 new MenuOption(Option.ScoringRule, false),
-                new MenuOption(Option.ActionRule, false)
+                new MenuOption(Option.ActionRule, false),
+                new MenuOption(Option.GameStart, false)
             }
         };
         
@@ -97,6 +98,7 @@ namespace Red7.ConsoleManager
             WriteDiscardDrawRule(58, 5, 14, SetupMenu.MenuOptions.Where(x => x.Option == Option.DiscardDrawRule).First().Active ? Color.Yellow : Color.White, game);
             WriteScoringRule(58, 5, 18, SetupMenu.MenuOptions.Where(x => x.Option == Option.ScoringRule).First().Active ? Color.Yellow : Color.White, game);
             WriteActionRule(58, 5, 21, SetupMenu.MenuOptions.Where(x => x.Option == Option.ActionRule).First().Active ? Color.Yellow : Color.White, game);
+            WriteGameStart(58, 5, 24, SetupMenu.MenuOptions.Where(x => x.Option == Option.GameStart).First().Active ? Color.Yellow : Color.White, game);
         }
 
         private static void WriteIntroduction(int width, int left, int top, Color color)
@@ -131,6 +133,11 @@ namespace Red7.ConsoleManager
                 ConsoleHelper.WriteWordWrapAt(58, 5, 21, "4) Enable Action Rule (Forced actions when playing odd numbered cards to your palette)", color);
             else
                 ConsoleHelper.WriteWordWrapAt(58, 5, 21, "4) Enable Action Rule (Forced actions when playing odd numbered cards to your palette)", color);
+        }
+
+        private static void WriteGameStart(int width, int left, int top, Color color, Red7Game game)
+        {
+            ConsoleHelper.WriteWordWrapAt(width, left, top, "5) Start Game", color);
         }
 
         public static void InitializeConsoleGame(int playerCount)
