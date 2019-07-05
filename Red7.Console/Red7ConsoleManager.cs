@@ -3,6 +3,7 @@ using Red7.Core;
 using Red7.Core.Helpers;
 using Red7.Core.Infrastructure;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -48,10 +49,60 @@ namespace Red7.ConsoleManager
             Figlet figlet = new Figlet(font);
 
             Console.Write(figlet.ToAscii("Red Seven"), Color.Red);
-            DrawBorder(Color.Red, 1, 6, 65, 34);
-            DrawBorder(Color.White, 69, 0, 50, 40);
+            DrawBorder(Color.Red, 1, 6, 65, 34, true);
+            DrawBorder(Color.White, 69, 0, 50, 40, true);
+
+            //Console.SetCursorPosition(4, 9);
+            WriteWordWrapAt(58, 5, 9, "Welcome to the game Red 7. Before we get started begin by adding some players and setting up your game settings.", Color.White);
+            WriteWordWrapAt(58, 5, 12, "1) Add Players", Color.White);
+
+            if (!red7Game.Rules.Where(x => x.AdvancedRule == Core.Enums.AdvancedRule.DiscardDraw).First().Enabled)
+                WriteWordWrapAt(58, 5, 14, "2) Enable Discard Draw Rule (Draw when playing to the Canvas and the number of cards in your palette is less than the value of the card played)", Color.White);
+            else
+                WriteWordWrapAt(58, 5, 14, "2) Disable Discard Draw Rule (Draw when playing to the Canvas and the number of cards in your palette is less than the value of the card played)", Color.White);
+
+            if (!red7Game.Rules.Where(x => x.AdvancedRule == Core.Enums.AdvancedRule.Scoring).First().Enabled)
+                WriteWordWrapAt(58, 5, 18, "3) Enable Scoring Rule (Score all the cards that meet the current rule at the end of a round)", Color.White);
+            else
+                WriteWordWrapAt(58, 5, 18, "3) Disable Scoring Rule (Score all the cards that meet the current rule at the end of a round)", Color.White);
+
+            if (!red7Game.Rules.Where(x => x.AdvancedRule == Core.Enums.AdvancedRule.Action).First().Enabled)
+                WriteWordWrapAt(58, 5, 21, "3) Enable Action Rule (Forced actions when playing odd numbered cards to your palette)", Color.White);
+            else
+                WriteWordWrapAt(58, 5, 21, "3) Enable Action Rule (Forced actions when playing odd numbered cards to your palette)", Color.White);
+
+            DrawBorder(Color.White, 5, 32, 57, 6);
 
             Console.ReadLine();
+        }
+
+        public static void WriteWordWrapAt(int width, int left, int top, string paragraph, Color color)
+        {
+            string[] lines = paragraph
+                .Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string process = lines[i];
+                List<String> wrapped = new List<string>();
+
+                while (process.Length > width)
+                {
+                    int wrapAt = process.LastIndexOf(' ', Math.Min(width - 1, process.Length));
+                    if (wrapAt <= 0) break;
+
+                    wrapped.Add(process.Substring(0, wrapAt));
+                    process = process.Remove(0, wrapAt + 1);
+                }
+
+                foreach (string wrap in wrapped)
+                {
+                    WriteAt(left, top, wrap, color);
+                    top++;
+                }
+
+                WriteAt(left, top, process, color);
+            }
         }
 
         public static void InitializeConsoleGame(int playerCount)
@@ -63,7 +114,7 @@ namespace Red7.ConsoleManager
 
             Console.SetBufferSize(WidthValue, HeightValue);
             Console.SetWindowSize(WidthValue, HeightValue);
-            DrawBorder(Color.FloralWhite, 0, 0, WidthValue, BoardHeightValue); 
+            DrawBorder(Color.FloralWhite, 0, 0, WidthValue, BoardHeightValue, true); 
         }
 
         private static void DrawBoxedWord(int left, int top, string word, Color color)
@@ -196,7 +247,7 @@ namespace Red7.ConsoleManager
             Console.SetCursorPosition(currentLeft, currentTop);
         }
 
-        private static void DrawBorder(Color color, int originX, int originY, int width, int height)
+        private static void DrawBorder(Color color, int originX, int originY, int width, int height, bool doubleBorder = false)
         {
             // i = Column
             for (int i = originX; i < width + originX; i++)
@@ -213,7 +264,7 @@ namespace Red7.ConsoleManager
                         else
                             WriteAt(i, j, "─", color);
                     }
-                    else if (j == originY + 1)
+                    else if (j == originY + 1 && doubleBorder)
                     {
                         if (i == originX)
                             WriteAt(i, j, "│", color);
@@ -235,7 +286,7 @@ namespace Red7.ConsoleManager
                         else
                             WriteAt(i, j, "─", color);
                     }
-                    else if (j == originY + height - 2)
+                    else if (j == originY + height - 2 && doubleBorder)
                     {
                         if (i == originX)
                             WriteAt(i, j, "│", color);
@@ -250,9 +301,9 @@ namespace Red7.ConsoleManager
                     }
                     else
                     {
-                        if (i == originX || i == originX + 2)
+                        if (i == originX || (i == originX + 2 && doubleBorder))
                             WriteAt(i, j, "│", color);
-                        else if (i == originX + width - 1 || i == originX + width - 3)
+                        else if (i == originX + width - 1 || (i == originX + width - 3 && doubleBorder))
                             WriteAt(i, j, "│", color);
                     }
                 }
