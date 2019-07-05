@@ -61,7 +61,7 @@ namespace Red7.ConsoleManager
             
             while (!Console.KeyAvailable)
             {
-                ConsoleKeyInfo keyInfo = Console.ReadKey();
+                ConsoleKeyInfo keyInfo = Console.ReadKey(true);
                 if (keyInfo.Key == ConsoleKey.UpArrow)
                 {
                     var index = SetupMenu.MenuOptions.FindIndex(y => y.Active);
