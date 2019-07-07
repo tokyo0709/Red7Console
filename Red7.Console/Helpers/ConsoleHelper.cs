@@ -55,6 +55,17 @@ namespace Red7.ConsoleManager.Helpers
             Console.SetCursorPosition(currentLeft, currentTop);
         }
 
+        public static void EraseSection(int width, int lines, int left, int top)
+        {
+            for (int i = top; i < top + lines; i++)
+            {
+                for (int j = left; j < left + width; j++)
+                {
+                    WriteAt(j, i, " ", Color.White);
+                }
+            }
+        }
+
         public static void WriteWordWrapAt(int width, int left, int top, string paragraph, Color color)
         {
             string[] lines = paragraph

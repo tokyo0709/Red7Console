@@ -1,21 +1,24 @@
 ﻿using Red7.Core.Components;
+using System.Threading;
 
 namespace Red7.Core.Infrastructure
 {
     public class Player
     {
+        static int NextId;
+
         public int Id { get; }
         public string Name { get; }
         public Hand Hand { get; }
         public Palette Palette { get; }
         public bool ActivePlayer { get; set; }
 
-        public Player(int id, string name)
+        public Player(string name)
         {
-            Id = id;
+            Id = Interlocked.Increment(ref NextId);
             Name = name;
-            Hand = new Hand(id);
-            Palette = new Palette(id);
+            Hand = new Hand(Id);
+            Palette = new Palette(Id);
             ActivePlayer = false;
         }
 

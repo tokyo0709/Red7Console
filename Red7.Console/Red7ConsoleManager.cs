@@ -40,6 +40,11 @@ namespace Red7.ConsoleManager
             WidthValue = playerCount * 50;
         }
 
+        private static void WriteConsoleSectionBorder(Color color)
+        {
+            ConsoleHelper.DrawBorder(color, 5, 33, 57, 5);
+        }
+
         public static void InitializeConsoleSetup(Red7Game red7Game)
         {
             Console.SetBufferSize(120, 40);
@@ -57,8 +62,10 @@ namespace Red7.ConsoleManager
             ConsoleHelper.DrawBorder(Color.White, 69, 0, 50, 40, true);
 
             WriteMenu(red7Game);
-            ConsoleHelper.DrawBorder(Color.White, 5, 32, 57, 6);
-            
+            WriteConsoleSectionBorder(Color.White);
+
+            WriteSettings(red7Game);
+
             while (!Console.KeyAvailable)
             {
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
@@ -84,11 +91,121 @@ namespace Red7.ConsoleManager
 
                     WriteMenu(red7Game);
                 }
+                else if (keyInfo.Key == ConsoleKey.Enter)
+                {
+                    var selectedOption = SetupMenu.MenuOptions.Where(x => x.Active).First();
+
+                    switch (selectedOption.Option)
+                    {
+                        case Option.AddPlayers:
+                            AddPlayerPrompt(red7Game);
+                            break;
+                        case Option.DiscardDrawRule:
+                            ToggleDiscardDrawRule(red7Game);
+                            break;
+                        case Option.ScoringRule:
+                            ToggleScoringRule(red7Game);
+                            break;
+                        case Option.ActionRule:
+                            ToggleActionRule(red7Game);
+                            break;
+                        case Option.GameStart:
+                            break;
+                        default:
+                            break;
+                    }
+                }
                 else if (keyInfo.Key == ConsoleKey.Escape)
                 {
+                    red7Game.BeginGame();
                     break;
                 }
             }
+        }
+
+        private static void AddPlayerPrompt(Red7Game red7Game)
+        {
+            SetupMenu.MenuOptions.Where(x => x.Option == Option.AddPlayers).First().Active = false;
+            WriteMenu(red7Game);
+
+            WriteConsoleSectionBorder(Color.Yellow);
+            ConsoleHelper.WriteWordWrapAt(58, 7, 35, "Add Player: ", Color.White);
+            Console.SetCursorPosition(19, 35);
+            Console.CursorVisible = true;
+
+            var playerName = Console.ReadLine();
+            Console.CursorVisible = false;
+
+            red7Game.Players.Add(new Player(playerName));
+            SetupMenu.MenuOptions.Where(x => x.Option == Option.AddPlayers).First().Active = true;
+
+            EraseOutputSection();
+            WriteConsoleSectionBorder(Color.White);
+            WriteMenu(red7Game);
+            EraseSettings();
+            WriteSettings(red7Game);
+        }
+
+        private static void ToggleActionRule(Red7Game red7Game)
+        {
+            var actionRule = red7Game.Rules.Where(x => x.AdvancedRule == Core.Enums.AdvancedRule.Action).First();
+            red7Game.Rules.Where(x => x.AdvancedRule == Core.Enums.AdvancedRule.Action).First().Enabled = !actionRule.Enabled;
+
+            WriteMenu(red7Game);
+            WriteSettings(red7Game);
+        }
+
+        private static void ToggleScoringRule(Red7Game red7Game)
+        {
+            var scoringRule = red7Game.Rules.Where(x => x.AdvancedRule == Core.Enums.AdvancedRule.Scoring).First();
+            red7Game.Rules.Where(x => x.AdvancedRule == Core.Enums.AdvancedRule.Scoring).First().Enabled = !scoringRule.Enabled;
+
+            WriteMenu(red7Game);
+            WriteSettings(red7Game);
+        }
+
+        private static void ToggleDiscardDrawRule(Red7Game red7Game)
+        {
+            var discardDrawRule = red7Game.Rules.Where(x => x.AdvancedRule == Core.Enums.AdvancedRule.DiscardDraw).First();
+            red7Game.Rules.Where(x => x.AdvancedRule == Core.Enums.AdvancedRule.DiscardDraw).First().Enabled = !discardDrawRule.Enabled;
+
+            WriteMenu(red7Game);
+            WriteSettings(red7Game);
+        }
+
+        private static void EraseSettings()
+        {
+            ConsoleHelper.EraseSection(44, 34, 72, 3);
+        }
+
+        private static void WriteSettings(Red7Game game)
+        {
+            var yOrigin = 3;
+            ConsoleHelper.WriteWordWrapAt(45, 73, yOrigin, "Players:", Color.White);
+
+            yOrigin = yOrigin + 2;
+
+            foreach (var player in game.Players)
+            {
+                ConsoleHelper.WriteWordWrapAt(45, 73, yOrigin, player.Name, Color.White);
+                yOrigin++;
+            }
+
+            yOrigin++;
+            ConsoleHelper.WriteWordWrapAt(45, 73, yOrigin, "Advanced Rules:", Color.White);
+
+            yOrigin = yOrigin + 2;
+
+            foreach (var rule in game.Rules)
+            {
+                ConsoleHelper.WriteWordWrapAt(45, 73, yOrigin, $"{(rule.Enabled ? "(Enabled) " : "(Disabled)")} {rule.AdvancedRule.GetDescription()}", Color.White);
+                yOrigin++;
+            }
+        }
+
+        private static void EraseMenu()
+        {
+            ConsoleHelper.EraseSection(59, 30, 4, 8);
         }
 
         private static void WriteMenu(Red7Game game)
@@ -99,6 +216,11 @@ namespace Red7.ConsoleManager
             WriteScoringRule(58, 5, 18, SetupMenu.MenuOptions.Where(x => x.Option == Option.ScoringRule).First().Active ? Color.Yellow : Color.White, game);
             WriteActionRule(58, 5, 21, SetupMenu.MenuOptions.Where(x => x.Option == Option.ActionRule).First().Active ? Color.Yellow : Color.White, game);
             WriteGameStart(58, 5, 24, SetupMenu.MenuOptions.Where(x => x.Option == Option.GameStart).First().Active ? Color.Yellow : Color.White, game);
+        }
+
+        private static void EraseOutputSection()
+        {
+            ConsoleHelper.EraseSection(55, 3, 6, 34);
         }
 
         private static void WriteIntroduction(int width, int left, int top, Color color)
@@ -114,7 +236,7 @@ namespace Red7.ConsoleManager
         private static void WriteDiscardDrawRule(int width, int left, int top, Color color, Red7Game game)
         {
             if (!game.Rules.Where(x => x.AdvancedRule == Core.Enums.AdvancedRule.DiscardDraw).First().Enabled)
-                ConsoleHelper.WriteWordWrapAt(width, left, top, "2) Enable Discard Draw Rule (Draw when playing to the Canvas and the number of cards in your palette is less than the value of the card played)", color);
+                ConsoleHelper.WriteWordWrapAt(width, left, top, "2) Enable  Discard Draw Rule (Draw when playing to the Canvas and the number of cards in your palette is less than the value of the card played)", color);
             else
                 ConsoleHelper.WriteWordWrapAt(58, 5, 14, "2) Disable Discard Draw Rule (Draw when playing to the Canvas and the number of cards in your palette is less than the value of the card played)", color);
         }
@@ -122,7 +244,7 @@ namespace Red7.ConsoleManager
         private static void WriteScoringRule(int width, int left, int top, Color color, Red7Game game)
         {
             if (!game.Rules.Where(x => x.AdvancedRule == Core.Enums.AdvancedRule.Scoring).First().Enabled)
-                ConsoleHelper.WriteWordWrapAt(58, 5, 18, "3) Enable Scoring Rule (Score all the cards that meet the current rule at the end of a round)", color);
+                ConsoleHelper.WriteWordWrapAt(58, 5, 18, "3) Enable  Scoring Rule (Score all the cards that meet the current rule at the end of a round)", color);
             else
                 ConsoleHelper.WriteWordWrapAt(58, 5, 18, "3) Disable Scoring Rule (Score all the cards that meet the current rule at the end of a round)", color);
         }
@@ -130,9 +252,9 @@ namespace Red7.ConsoleManager
         private static void WriteActionRule(int width, int left, int top, Color color, Red7Game game)
         {
             if (!game.Rules.Where(x => x.AdvancedRule == Core.Enums.AdvancedRule.Action).First().Enabled)
-                ConsoleHelper.WriteWordWrapAt(58, 5, 21, "4) Enable Action Rule (Forced actions when playing odd numbered cards to your palette)", color);
+                ConsoleHelper.WriteWordWrapAt(58, 5, 21, "4) Enable  Action Rule (Forced actions when playing odd numbered cards to your palette)", color);
             else
-                ConsoleHelper.WriteWordWrapAt(58, 5, 21, "4) Enable Action Rule (Forced actions when playing odd numbered cards to your palette)", color);
+                ConsoleHelper.WriteWordWrapAt(58, 5, 21, "4) Enable  Action Rule (Forced actions when playing odd numbered cards to your palette)", color);
         }
 
         private static void WriteGameStart(int width, int left, int top, Color color, Red7Game game)
@@ -147,7 +269,7 @@ namespace Red7.ConsoleManager
             SetBorderValues(playerCount);
             OtherPlayerBoardsMasked = true;
 
-            Console.SetBufferSize(WidthValue, HeightValue);
+            //Console.SetBufferSize(WidthValue, HeightValue);
             Console.SetWindowSize(WidthValue, HeightValue);
             ConsoleHelper.DrawBorder(Color.FloralWhite, 0, 0, WidthValue, BoardHeightValue, true); 
         }
