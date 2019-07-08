@@ -20,7 +20,7 @@ namespace Red7.ConsoleManager
         private static int HeightValue { get; set; } = 40;
         private static int BoardHeightValue { get; set; } = 24;
         private static int WidthValue { get; set; } = 200;
-        private static int PlayerBoardWidth { get; set; } = 50;
+        private static int PlayerBoardWidth { get; set; } = 40;
         private static int CardWidth { get; set; } = 3;
         private static bool OtherPlayerBoardsMasked { get; set; } = false;
         private static SetupMenu SetupMenu { get; } = new SetupMenu
@@ -37,7 +37,7 @@ namespace Red7.ConsoleManager
         
         private static void SetBorderValues(int playerCount)
         {
-            WidthValue = playerCount * 50;
+            WidthValue = (playerCount * PlayerBoardWidth) + 3;
         }
 
         private static void WriteConsoleSectionBorder(Color color)
@@ -47,8 +47,8 @@ namespace Red7.ConsoleManager
 
         public static void InitializeConsoleSetup(Red7Game red7Game)
         {
-            Console.SetBufferSize(120, 40);
             Console.SetWindowSize(120, 40);
+            Console.SetBufferSize(120, 40);
             Console.CursorVisible = false;
 
             var root = FileHelper.GetApplicationRoot();
@@ -344,6 +344,19 @@ namespace Red7.ConsoleManager
 
             ConsoleHelper.DrawBoxedWord(4, 16, "Draw Deck", Color.White);
             ConsoleHelper.DrawBoxedWord(16, 16, $"{red7Game.Deck.Cards.Count}", Color.White);
+            ConsoleHelper.DrawBoxedWord(30, 16, "R", ColorConverter.GetConsoleColor(Core.Enums.Color.Red));
+            ConsoleHelper.WriteAt(34, 17, ">", Color.White);
+            ConsoleHelper.DrawBoxedWord(36, 16, "O", ColorConverter.GetConsoleColor(Core.Enums.Color.Orange));
+            ConsoleHelper.WriteAt(40, 17, ">", Color.White);
+            ConsoleHelper.DrawBoxedWord(42, 16, "Y", ColorConverter.GetConsoleColor(Core.Enums.Color.Yellow));
+            ConsoleHelper.WriteAt(46, 17, ">", Color.White);
+            ConsoleHelper.DrawBoxedWord(48, 16, "G", ColorConverter.GetConsoleColor(Core.Enums.Color.Green));
+            ConsoleHelper.WriteAt(52, 17, ">", Color.White);
+            ConsoleHelper.DrawBoxedWord(54, 16, "B", ColorConverter.GetConsoleColor(Core.Enums.Color.Blue));
+            ConsoleHelper.WriteAt(58, 17, ">", Color.White);
+            ConsoleHelper.DrawBoxedWord(60, 16, "I", ColorConverter.GetConsoleColor(Core.Enums.Color.Indigo));
+            ConsoleHelper.WriteAt(64, 17, ">", Color.White);
+            ConsoleHelper.DrawBoxedWord(66, 16, "V", ColorConverter.GetConsoleColor(Core.Enums.Color.Violet));
 
             var activeCanvasCard = red7Game.Canvas.GetActiveCanvasCard();
             ConsoleHelper.DrawBoxedWord(4, 19, "Canvas", Color.White);
