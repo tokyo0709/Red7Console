@@ -91,6 +91,11 @@ namespace Red7.ConsoleManager
 
                     WriteMenu(red7Game);
                 }
+                else if (keyInfo.Key == ConsoleKey.Enter && SetupMenu.MenuOptions.Where(x => x.Active).First().Option == Option.GameStart)
+                {
+                    red7Game.BeginGame();
+                    break;
+                }
                 else if (keyInfo.Key == ConsoleKey.Enter)
                 {
                     var selectedOption = SetupMenu.MenuOptions.Where(x => x.Active).First();
@@ -109,16 +114,9 @@ namespace Red7.ConsoleManager
                         case Option.ActionRule:
                             ToggleActionRule(red7Game);
                             break;
-                        case Option.GameStart:
-                            break;
                         default:
                             break;
                     }
-                }
-                else if (keyInfo.Key == ConsoleKey.Escape)
-                {
-                    red7Game.BeginGame();
-                    break;
                 }
             }
         }
