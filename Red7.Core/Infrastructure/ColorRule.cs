@@ -85,6 +85,20 @@ namespace Red7.Core.Infrastructure
                     throw new Exception($"No corresponding color matching {color.ToString()}");
             }
         }
+
+        public static List<ColorRule> GetAllColorRules()
+        {
+            return new List<ColorRule>
+            {
+                Red,
+                Orange,
+                Yellow,
+                Green,
+                Blue,
+                Indigo,
+                Violet
+            };
+        }
     }
 
     public class ColorRule

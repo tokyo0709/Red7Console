@@ -19,7 +19,7 @@ namespace Red7Console
             var red7Game = new Red7Game();
 
             Red7ConsoleManager.InitializeConsoleSetup(red7Game);
-            Red7ConsoleManager.InitializeConsoleGame(red7Game.Players.Count);
+            Red7ConsoleManager.InitializeConsoleGame(red7Game);
             Red7ConsoleManager.DrawBoards(red7Game);
 
             Console.ReadLine();

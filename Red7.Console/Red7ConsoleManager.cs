@@ -17,8 +17,9 @@ namespace Red7.ConsoleManager
 {
     public static class Red7ConsoleManager
     {
-        private static int HeightValue { get; set; } = 40;
+        private static int HeightValue { get; set; } = 47;
         private static int BoardHeightValue { get; set; } = 24;
+        private static int MinWidthValue { get; set; } = 120;
         private static int WidthValue { get; set; } = 200;
         private static int PlayerBoardWidth { get; set; } = 40;
         private static int CardWidth { get; set; } = 3;
@@ -37,7 +38,8 @@ namespace Red7.ConsoleManager
         
         private static void SetBorderValues(int playerCount)
         {
-            WidthValue = (playerCount * PlayerBoardWidth) + 3;
+            var width = (playerCount * PlayerBoardWidth) + 3;
+            WidthValue = width < MinWidthValue ? MinWidthValue : width;
         }
 
         private static void WriteConsoleSectionBorder(Color color)
@@ -260,16 +262,46 @@ namespace Red7.ConsoleManager
             ConsoleHelper.WriteWordWrapAt(width, left, top, "5) Start Game", color);
         }
 
-        public static void InitializeConsoleGame(int playerCount)
+        public static void InitializeConsoleGame(Red7Game game)
         {
             Console.Clear();
 
-            SetBorderValues(playerCount);
+            SetBorderValues(game.Players.Count);
             OtherPlayerBoardsMasked = true;
 
-            //Console.SetBufferSize(WidthValue, HeightValue);
             Console.SetWindowSize(WidthValue, HeightValue);
-            ConsoleHelper.DrawBorder(Color.FloralWhite, 0, 0, WidthValue, BoardHeightValue, true); 
+            Console.SetBufferSize(WidthValue, HeightValue);
+            ConsoleHelper.DrawBorder(Color.FloralWhite, 0, 0, WidthValue, BoardHeightValue, true);
+            ConsoleHelper.DrawBorder(Color.White, 0, BoardHeightValue, WidthValue, HeightValue - BoardHeightValue, false);
+
+            var ruleDescriptionLength = ColorRules.GetAllColorRules().OrderByDescending(s => s.RuleDescription.Length).First().RuleDescription.Length;
+            ConsoleHelper.DrawBoxedWord(WidthValue - ruleDescriptionLength - 8, BoardHeightValue + 1, "R", ColorConverter.GetConsoleColor(Core.Enums.Color.Red));
+            ConsoleHelper.WriteAt(WidthValue - ruleDescriptionLength - 5, BoardHeightValue + 2, "-", ColorConverter.GetConsoleColor(Core.Enums.Color.Red));
+            ConsoleHelper.DrawBoxedWord(WidthValue - ruleDescriptionLength - 4, BoardHeightValue + 1, ColorRules.Red.RuleDescription, ColorConverter.GetConsoleColor(Core.Enums.Color.Red));
+
+            ConsoleHelper.DrawBoxedWord(WidthValue - ruleDescriptionLength - 8, BoardHeightValue + 4, "O", ColorConverter.GetConsoleColor(Core.Enums.Color.Orange));
+            ConsoleHelper.WriteAt(WidthValue - ruleDescriptionLength - 5, BoardHeightValue + 5, "-", ColorConverter.GetConsoleColor(Core.Enums.Color.Orange));
+            ConsoleHelper.DrawBoxedWord(WidthValue - ruleDescriptionLength - 4, BoardHeightValue + 4, ColorRules.Orange.RuleDescription, ColorConverter.GetConsoleColor(Core.Enums.Color.Orange));
+
+            ConsoleHelper.DrawBoxedWord(WidthValue - ruleDescriptionLength - 8, BoardHeightValue + 7, "Y", ColorConverter.GetConsoleColor(Core.Enums.Color.Yellow));
+            ConsoleHelper.WriteAt(WidthValue - ruleDescriptionLength - 5, BoardHeightValue + 8, "-", ColorConverter.GetConsoleColor(Core.Enums.Color.Yellow));
+            ConsoleHelper.DrawBoxedWord(WidthValue - ruleDescriptionLength - 4, BoardHeightValue + 7, ColorRules.Yellow.RuleDescription, ColorConverter.GetConsoleColor(Core.Enums.Color.Yellow));
+
+            ConsoleHelper.DrawBoxedWord(WidthValue - ruleDescriptionLength - 8, BoardHeightValue + 10, "G", ColorConverter.GetConsoleColor(Core.Enums.Color.Green));
+            ConsoleHelper.WriteAt(WidthValue - ruleDescriptionLength - 5, BoardHeightValue + 11, "-", ColorConverter.GetConsoleColor(Core.Enums.Color.Green));
+            ConsoleHelper.DrawBoxedWord(WidthValue - ruleDescriptionLength - 4, BoardHeightValue + 10, ColorRules.Green.RuleDescription, ColorConverter.GetConsoleColor(Core.Enums.Color.Green));
+
+            ConsoleHelper.DrawBoxedWord(WidthValue - ruleDescriptionLength - 8, BoardHeightValue + 13, "B", ColorConverter.GetConsoleColor(Core.Enums.Color.Blue));
+            ConsoleHelper.WriteAt(WidthValue - ruleDescriptionLength - 5, BoardHeightValue + 14, "-", ColorConverter.GetConsoleColor(Core.Enums.Color.Blue));
+            ConsoleHelper.DrawBoxedWord(WidthValue - ruleDescriptionLength - 4, BoardHeightValue + 13, ColorRules.Blue.RuleDescription, ColorConverter.GetConsoleColor(Core.Enums.Color.Blue));
+
+            ConsoleHelper.DrawBoxedWord(WidthValue - ruleDescriptionLength - 8, BoardHeightValue + 16, "I", ColorConverter.GetConsoleColor(Core.Enums.Color.Indigo));
+            ConsoleHelper.WriteAt(WidthValue - ruleDescriptionLength - 5, BoardHeightValue + 17, "-", ColorConverter.GetConsoleColor(Core.Enums.Color.Indigo));
+            ConsoleHelper.DrawBoxedWord(WidthValue - ruleDescriptionLength - 4, BoardHeightValue + 16, ColorRules.Indigo.RuleDescription, ColorConverter.GetConsoleColor(Core.Enums.Color.Indigo));
+
+            ConsoleHelper.DrawBoxedWord(WidthValue - ruleDescriptionLength - 8, BoardHeightValue + 19, "V", ColorConverter.GetConsoleColor(Core.Enums.Color.Violet));
+            ConsoleHelper.WriteAt(WidthValue - ruleDescriptionLength - 5, BoardHeightValue + 20, "-", ColorConverter.GetConsoleColor(Core.Enums.Color.Violet));
+            ConsoleHelper.DrawBoxedWord(WidthValue - ruleDescriptionLength - 4, BoardHeightValue + 19, ColorRules.Violet.RuleDescription, ColorConverter.GetConsoleColor(Core.Enums.Color.Violet));
         }
 
         public static void DrawBoards(Red7Game red7Game)
