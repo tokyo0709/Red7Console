@@ -274,6 +274,11 @@ namespace Red7.ConsoleManager
             ConsoleHelper.DrawBorder(Color.FloralWhite, 0, 0, WidthValue, BoardHeightValue, true);
             ConsoleHelper.DrawBorder(Color.White, 0, BoardHeightValue, WidthValue, HeightValue - BoardHeightValue, false);
 
+            DrawRuleHelper();
+        }
+
+        public static void DrawRuleHelper()
+        {
             var ruleDescriptionLength = ColorRules.GetAllColorRules().OrderByDescending(s => s.RuleDescription.Length).First().RuleDescription.Length;
             ConsoleHelper.DrawBoxedWord(WidthValue - ruleDescriptionLength - 8, BoardHeightValue + 1, "R", ColorConverter.GetConsoleColor(Core.Enums.Color.Red));
             ConsoleHelper.WriteAt(WidthValue - ruleDescriptionLength - 5, BoardHeightValue + 2, "-", ColorConverter.GetConsoleColor(Core.Enums.Color.Red));
@@ -302,6 +307,7 @@ namespace Red7.ConsoleManager
             ConsoleHelper.DrawBoxedWord(WidthValue - ruleDescriptionLength - 8, BoardHeightValue + 19, "V", ColorConverter.GetConsoleColor(Core.Enums.Color.Violet));
             ConsoleHelper.WriteAt(WidthValue - ruleDescriptionLength - 5, BoardHeightValue + 20, "-", ColorConverter.GetConsoleColor(Core.Enums.Color.Violet));
             ConsoleHelper.DrawBoxedWord(WidthValue - ruleDescriptionLength - 4, BoardHeightValue + 19, ColorRules.Violet.RuleDescription, ColorConverter.GetConsoleColor(Core.Enums.Color.Violet));
+
         }
 
         public static void DrawBoards(Red7Game red7Game)
