@@ -133,13 +133,16 @@ namespace Red7.ConsoleManager
             DrawBoards(game);
             ConsoleHelper.DrawBorder(Color.White, 0, BoardHeightValue, WidthValue, HeightValue - BoardHeightValue, false); // Action Section Border
             WriteActionMenu();
-            WriteActionSectionBorder(Color.White); // Action Input/Output Section
+            WriteActionHistorySectionBorder(Color.White); // Action Output Section
+            WriteActionInputSectionBorder(Color.White); // Action Input Section
 
             DrawRuleHelper(); // ROYGBIV Color Reference Helper
 
             // Action Menu Loop
             while (!Console.KeyAvailable)
             {
+                var activePlayer = game.Players.Where(x => x.Active == true).First();
+
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
                 if (keyInfo.Key == ConsoleKey.UpArrow)
                 {
@@ -170,6 +173,7 @@ namespace Red7.ConsoleManager
                     switch (selectedOption.Option)
                     {
                         case ActionOption.PlayToPalette:
+                            SelectCardToPlayToPalette(game, activePlayer);
                             break;
                         case ActionOption.PlayToCanvas:
                             break;
@@ -219,89 +223,25 @@ namespace Red7.ConsoleManager
 
         public static void DrawBoards(Red7Game red7Game)
         {
-            var activePlayer = red7Game.Players.Where(x => x.ActivePlayer == true).First();
+            var activePlayer = red7Game.Players.Where(x => x.Active == true).First();
 
-            // Loop through players and draw individual player boards
-            for (int i = 0; i < red7Game.Players.Count; i++)
-            {
-                var player = red7Game.Players.ElementAt(i);
-
-                ConsoleHelper.DrawBoxedWord(4 + (i * PlayerBoardWidth), 2, player.Name, player.ActivePlayer ? Color.Yellow : Color.White);
-
-                // Draw Palette cards
-                Console.SetCursorPosition(4 + (i * PlayerBoardWidth), 6);
-                Console.Write("Palette:", Color.White);
-
-                foreach (var card in player.Palette.Cards)
-                {
-                    // Palette boxed cards
-                    for (int j = 0; j <= 2; j++)
-                    {
-                        if (j == 0) // Box tops
-                        {
-                            Console.SetCursorPosition(4 + (i * PlayerBoardWidth), 7);
-                            Console.Write("┌─┐", card.Color.GetConsoleColor());
-                        }
-                        else if (j == 1) // Box contents
-                        {
-                            Console.SetCursorPosition(4 + (i * PlayerBoardWidth), 8);
-                            Console.Write($"│{card.Value}│", card.Color.GetConsoleColor());
-                        }
-                        else if (j == 2) // Box bottoms
-                        {
-                            Console.SetCursorPosition(4 + (i * PlayerBoardWidth), 9);
-                            Console.Write("└─┘", card.Color.GetConsoleColor());
-                        }
-                    }
-                }
-
-                // Draw hand cards
-                Console.SetCursorPosition(4 + (i * PlayerBoardWidth), 11);
-                Console.WriteLine("Hand:", Color.White);
-
-                for (int k = 0; k < player.Hand.Cards.Count; k++)
-                {
-                    var card = player.Hand.Cards.ElementAt(k);
-                    var cardColor = OtherPlayerBoardsMasked && !player.ActivePlayer ? Color.White : card.Color.GetConsoleColor();
-                    var cardValue = OtherPlayerBoardsMasked && !player.ActivePlayer ? "│X│" : $"│{card.Value}│";
-
-                    // Hand boxed cards
-                    for (int j = 0; j <= 2; j++)
-                    {
-                        if (j == 0) // Box tops
-                        {
-                            Console.SetCursorPosition(4 + (k * CardWidth) + (i * PlayerBoardWidth), 12);
-                            Console.Write("┌─┐", cardColor);
-                        }
-                        else if (j == 1) // Box contents
-                        {
-                            Console.SetCursorPosition(4 + (k * CardWidth) + (i * PlayerBoardWidth), 13);
-                            Console.Write(cardValue, cardColor);
-                        }
-                        else if (j == 2) // Box bottoms
-                        {
-                            Console.SetCursorPosition(4 + (k * CardWidth) + (i * PlayerBoardWidth), 14);
-                            Console.Write("└─┘", cardColor);
-                        }
-                    }
-                }
-            } // End Player Board Loop
+            DrawPlayerBoards(red7Game);
 
             ConsoleHelper.DrawBoxedWord(4, 16, "Draw Deck", Color.White);
             ConsoleHelper.DrawBoxedWord(16, 16, $"{red7Game.Deck.Cards.Count}", Color.White);
-            ConsoleHelper.DrawBoxedWord(30, 16, "R", ColorConverter.GetConsoleColor(Core.Enums.Color.Red));
-            ConsoleHelper.WriteAt(34, 17, ">", Color.White);
-            ConsoleHelper.DrawBoxedWord(36, 16, "O", ColorConverter.GetConsoleColor(Core.Enums.Color.Orange));
-            ConsoleHelper.WriteAt(40, 17, ">", Color.White);
-            ConsoleHelper.DrawBoxedWord(42, 16, "Y", ColorConverter.GetConsoleColor(Core.Enums.Color.Yellow));
-            ConsoleHelper.WriteAt(46, 17, ">", Color.White);
-            ConsoleHelper.DrawBoxedWord(48, 16, "G", ColorConverter.GetConsoleColor(Core.Enums.Color.Green));
-            ConsoleHelper.WriteAt(52, 17, ">", Color.White);
-            ConsoleHelper.DrawBoxedWord(54, 16, "B", ColorConverter.GetConsoleColor(Core.Enums.Color.Blue));
-            ConsoleHelper.WriteAt(58, 17, ">", Color.White);
-            ConsoleHelper.DrawBoxedWord(60, 16, "I", ColorConverter.GetConsoleColor(Core.Enums.Color.Indigo));
-            ConsoleHelper.WriteAt(64, 17, ">", Color.White);
-            ConsoleHelper.DrawBoxedWord(66, 16, "V", ColorConverter.GetConsoleColor(Core.Enums.Color.Violet));
+            ConsoleHelper.DrawBoxedWord(WidthValue - 41, 19, "R", ColorConverter.GetConsoleColor(Core.Enums.Color.Red));
+            ConsoleHelper.WriteAt(WidthValue - 37, 20, ">", Color.White);
+            ConsoleHelper.DrawBoxedWord(WidthValue - 35, 19, "O", ColorConverter.GetConsoleColor(Core.Enums.Color.Orange));
+            ConsoleHelper.WriteAt(WidthValue - 31, 20, ">", Color.White);
+            ConsoleHelper.DrawBoxedWord(WidthValue - 29, 19, "Y", ColorConverter.GetConsoleColor(Core.Enums.Color.Yellow));
+            ConsoleHelper.WriteAt(WidthValue - 25, 20, ">", Color.White);
+            ConsoleHelper.DrawBoxedWord(WidthValue - 23, 19, "G", ColorConverter.GetConsoleColor(Core.Enums.Color.Green));
+            ConsoleHelper.WriteAt(WidthValue - 19, 20, ">", Color.White);
+            ConsoleHelper.DrawBoxedWord(WidthValue - 17, 19, "B", ColorConverter.GetConsoleColor(Core.Enums.Color.Blue));
+            ConsoleHelper.WriteAt(WidthValue - 13, 20, ">", Color.White);
+            ConsoleHelper.DrawBoxedWord(WidthValue - 11, 19, "I", ColorConverter.GetConsoleColor(Core.Enums.Color.Indigo));
+            ConsoleHelper.WriteAt(WidthValue - 7, 20, ">", Color.White);
+            ConsoleHelper.DrawBoxedWord(WidthValue - 5, 19, "V", ColorConverter.GetConsoleColor(Core.Enums.Color.Violet));
 
             var activeCanvasCard = red7Game.Canvas.GetActiveCanvasCard();
             ConsoleHelper.DrawBoxedWord(4, 19, "Canvas", Color.White);
@@ -309,6 +249,61 @@ namespace Red7.ConsoleManager
             ConsoleHelper.DrawBoxedWord(19, 19, $"{ColorRules.GetRuleByColor(activeCanvasCard.Color).RuleDescription}", ColorConverter.GetConsoleColor(activeCanvasCard.Color));
 
             Console.CursorVisible = false;
+        }
+
+        private static void DrawPlayerBoards(Red7Game red7Game)
+        {
+            // Loop through players and draw individual player boards
+            for (int i = 0; i < red7Game.Players.Count; i++)
+            {
+                var player = red7Game.Players.ElementAt(i);
+
+                ConsoleHelper.DrawBoxedWord(4 + (i * PlayerBoardWidth), 2, player.Name, player.Active ? Color.Yellow : Color.White);
+
+                // Draw Palette cards
+                ConsoleHelper.WriteAt(4 + (i * PlayerBoardWidth), 6, "Palette:", Color.White);
+                ConsoleHelper.EraseSection(PlayerBoardWidth - 4, 3, 4 + (i * PlayerBoardWidth), 7);
+
+                for (int k = 0; k < player.Palette.Cards.Count; k++)
+                {
+                    var card = player.Palette.Cards.ElementAt(k);
+                    var cardColor = card.Color.GetConsoleColor();
+                    var cardValue = $"│{card.Value}│";
+
+                    // Palette boxed cards
+                    for (int j = 0; j <= 2; j++)
+                    {
+                        if (j == 0) // Box tops
+                            ConsoleHelper.WriteAt(4 + (k * CardWidth) + (i * PlayerBoardWidth), 7, "┌─┐", cardColor);
+                        else if (j == 1) // Box contents
+                            ConsoleHelper.WriteAt(4 + (k * CardWidth) + (i * PlayerBoardWidth), 8, cardValue, cardColor);
+                        else if (j == 2) // Box bottoms
+                            ConsoleHelper.WriteAt(4 + (k * CardWidth) + (i * PlayerBoardWidth), 9, "└─┘", cardColor);
+                    }
+                }
+
+                // Draw hand cards
+                ConsoleHelper.WriteAt(4 + (i * PlayerBoardWidth), 11, "Hand:", Color.White);
+                ConsoleHelper.EraseSection(PlayerBoardWidth - 4, 3, 4 + (i * PlayerBoardWidth), 12);
+
+                for (int k = 0; k < player.Hand.Cards.Count; k++)
+                {
+                    var card = player.Hand.Cards.ElementAt(k);
+                    var cardColor = OtherPlayerBoardsMasked && !player.Active ? Color.White : card.Color.GetConsoleColor();
+                    var cardValue = OtherPlayerBoardsMasked && !player.Active ? "│X│" : $"│{card.Value}│";
+
+                    // Hand boxed cards
+                    for (int j = 0; j <= 2; j++)
+                    {
+                        if (j == 0) // Box tops
+                            ConsoleHelper.WriteAt(4 + (k * CardWidth) + (i * PlayerBoardWidth), 12, "┌─┐", cardColor);
+                        else if (j == 1) // Box contents
+                            ConsoleHelper.WriteAt(4 + (k * CardWidth) + (i * PlayerBoardWidth), 13, cardValue, cardColor);
+                        else if (j == 2) // Box bottoms
+                            ConsoleHelper.WriteAt(4 + (k * CardWidth) + (i * PlayerBoardWidth), 14, "└─┘", cardColor);
+                    }
+                }
+            } // End Player Board Loop
         }
 
         private static void WriteFigletTitle()
@@ -333,9 +328,24 @@ namespace Red7.ConsoleManager
             ConsoleHelper.DrawBorder(color, 4, 34, 59, 5);
         }
 
-        private static void WriteActionSectionBorder(Color color)
+        private static void EraseActionHistorySection()
         {
-            ConsoleHelper.DrawBorder(color, 4, 39, 80, 6);
+            ConsoleHelper.EraseSection(78, 3, 5, 36);
+        }
+
+        private static void WriteActionHistorySectionBorder(Color color)
+        {
+            ConsoleHelper.DrawBorder(color, 4, 35, 80, 5);
+        }
+
+        private static void EraseActionInputSection()
+        {
+            ConsoleHelper.EraseSection(78, 3, 5, 41);
+        }
+
+        private static void WriteActionInputSectionBorder(Color color)
+        {
+            ConsoleHelper.DrawBorder(color, 4, 40, 80, 5);
         }
 
         private static void AddPlayerPrompt(Red7Game red7Game)
@@ -359,6 +369,76 @@ namespace Red7.ConsoleManager
             WriteSetupMenu(red7Game);
             EraseSettings();
             WriteSettings(red7Game);
+        }
+
+        private static void SelectCardToPlayToPalette(Red7Game red7Game, Player activePlayer)
+        {
+            // Create a temporary hand menu defaulting to the first card as active
+            var hand = new HandMenu() { MenuOptions = activePlayer.Hand.Cards.Select(x => new HandMenuOption(x, false)).ToList() };
+            hand.MenuOptions.First().Active = true;
+
+            // Write Prompt to Action Section
+            WriteActionInputSectionBorder(Color.Yellow);
+            ConsoleHelper.WriteWordWrapAt(78, 6, 42, "Play", Color.White);
+            ConsoleHelper.DrawBoxedWord(11, 41, hand.MenuOptions.First().Card.Value.ToString(), ColorConverter.GetConsoleColor(hand.MenuOptions.First().Card.Color));
+            ConsoleHelper.WriteWordWrapAt(78, 15, 42, "to your Palette (Left and right arrow keys to select your card)", Color.White);
+
+            // Card select loop
+            while (!Console.KeyAvailable)
+            {
+                var activeCard = hand.MenuOptions.Where(x => x.Active == true).First();
+
+                ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+                if (keyInfo.Key == ConsoleKey.LeftArrow)
+                {
+                    var index = hand.MenuOptions.FindIndex(y => y.Active);
+                    hand.MenuOptions.ElementAt(index).Active = false;
+                    if (index == 0)
+                        hand.MenuOptions.ElementAt(hand.MenuOptions.Count - 1).Active = true;
+                    else
+                        hand.MenuOptions.ElementAt(index - 1).Active = true;
+
+                    activeCard = hand.MenuOptions.Where(x => x.Active == true).First();
+
+                    ConsoleHelper.DrawBoxedWord(11, 41, activeCard.Card.Value.ToString(), ColorConverter.GetConsoleColor(activeCard.Card.Color));
+                }
+                else if (keyInfo.Key == ConsoleKey.RightArrow)
+                {
+                    var index = hand.MenuOptions.FindIndex(y => y.Active);
+                    hand.MenuOptions.ElementAt(index).Active = false;
+                    if (hand.MenuOptions.Count - 1 > index)
+                        hand.MenuOptions.ElementAt(index + 1).Active = true;
+                    else
+                        hand.MenuOptions.ElementAt(0).Active = true;
+
+                    activeCard = hand.MenuOptions.Where(x => x.Active == true).First();
+
+                    ConsoleHelper.DrawBoxedWord(11, 41, activeCard.Card.Value.ToString(), ColorConverter.GetConsoleColor(activeCard.Card.Color));
+                }
+                else if (keyInfo.Key == ConsoleKey.Enter)
+                {
+                    var selectedOption = hand.MenuOptions.Where(x => x.Active).First();
+
+                    if (GameLogic.IsWinning(red7Game, selectedOption.Card)) {
+                        activePlayer.AddCardToPalette(selectedOption.Card);
+                        activePlayer.RemoveCardFromHand(selectedOption.Card);
+
+                        activePlayer.Active = false;
+                        red7Game.GetNextPlayer(activePlayer).Active = true;
+
+                        // Write out as previous action in ActionOutputSection
+                        EraseActionHistorySection();
+                        ConsoleHelper.WriteWordWrapAt(78, 6, 37, $"{activePlayer.Name} played a", Color.White);
+                        ConsoleHelper.DrawBoxedWord(6 + activePlayer.Name.Length + 10, 36, selectedOption.Card.Value.ToString(), ColorConverter.GetConsoleColor(selectedOption.Card.Color));
+                        ConsoleHelper.WriteWordWrapAt(78, 6 + activePlayer.Name.Length + 10 + 3, 37, " to their Palette", Color.White);
+
+                        WriteActionInputSectionBorder(Color.White);
+                        EraseActionInputSection();
+                        DrawPlayerBoards(red7Game);
+                        break;
+                    }
+                }
+            }
         }
 
         private static void ToggleActionRule(Red7Game red7Game)
@@ -398,7 +478,7 @@ namespace Red7.ConsoleManager
             var yOrigin = 3;
             ConsoleHelper.WriteWordWrapAt(45, 73, yOrigin, "Players:", Color.White);
 
-            yOrigin = yOrigin + 2;
+            yOrigin += 2;
 
             foreach (var player in game.Players)
             {
@@ -409,7 +489,7 @@ namespace Red7.ConsoleManager
             yOrigin++;
             ConsoleHelper.WriteWordWrapAt(45, 73, yOrigin, "Advanced Rules:", Color.White);
 
-            yOrigin = yOrigin + 2;
+            yOrigin += 2;
 
             foreach (var rule in game.Rules)
             {
@@ -430,15 +510,15 @@ namespace Red7.ConsoleManager
             WriteDiscardDrawRule(58, 5, 14, SetupMenu.MenuOptions.Where(x => x.Option == SetupOption.DiscardDrawRule).First().Active ? Color.Yellow : Color.White, game);
             WriteScoringRule(58, 5, 18, SetupMenu.MenuOptions.Where(x => x.Option == SetupOption.ScoringRule).First().Active ? Color.Yellow : Color.White, game);
             WriteActionRule(58, 5, 21, SetupMenu.MenuOptions.Where(x => x.Option == SetupOption.ActionRule).First().Active ? Color.Yellow : Color.White, game);
-            WriteGameStart(58, 5, 24, SetupMenu.MenuOptions.Where(x => x.Option == SetupOption.GameStart).First().Active ? Color.Yellow : Color.White, game);
+            WriteGameStart(58, 5, 24, SetupMenu.MenuOptions.Where(x => x.Option == SetupOption.GameStart).First().Active ? Color.Yellow : Color.White);
         }
 
         private static void WriteActionMenu()
         {
             WritePaletteAction(80, 4, BoardHeightValue + 2, ActionMenu.MenuOptions.Where(x => x.Option == ActionOption.PlayToPalette).First().Active ? Color.Yellow : Color.White);
-            WriteCanvasAction(80, 4, BoardHeightValue + 5, ActionMenu.MenuOptions.Where(x => x.Option == ActionOption.PlayToCanvas).First().Active ? Color.Yellow : Color.White);
-            WritePaletteCanvasAction(80, 4, BoardHeightValue + 8, ActionMenu.MenuOptions.Where(x => x.Option == ActionOption.PlayToPaletteThenCanvas).First().Active ? Color.Yellow : Color.White);
-            WriteFoldAction(80, 4, BoardHeightValue + 11, ActionMenu.MenuOptions.Where(x => x.Option == ActionOption.Fold).First().Active ? Color.Yellow : Color.White);
+            WriteCanvasAction(80, 4, BoardHeightValue + 4, ActionMenu.MenuOptions.Where(x => x.Option == ActionOption.PlayToCanvas).First().Active ? Color.Yellow : Color.White);
+            WritePaletteCanvasAction(80, 4, BoardHeightValue + 6, ActionMenu.MenuOptions.Where(x => x.Option == ActionOption.PlayToPaletteThenCanvas).First().Active ? Color.Yellow : Color.White);
+            WriteFoldAction(80, 4, BoardHeightValue + 8, ActionMenu.MenuOptions.Where(x => x.Option == ActionOption.Fold).First().Active ? Color.Yellow : Color.White);
         }
 
         private static void EraseOutputSection()
@@ -480,7 +560,7 @@ namespace Red7.ConsoleManager
                 ConsoleHelper.WriteWordWrapAt(width, left, top, "4) Enable  Action Rule (Forced actions when playing odd numbered cards to your palette)", color);
         }
 
-        private static void WriteGameStart(int width, int left, int top, Color color, Red7Game game)
+        private static void WriteGameStart(int width, int left, int top, Color color)
         {
             ConsoleHelper.WriteWordWrapAt(width, left, top, "5) Start Game", color);
         }

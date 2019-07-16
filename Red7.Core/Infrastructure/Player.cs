@@ -1,4 +1,5 @@
 ﻿using Red7.Core.Components;
+using System.Linq;
 using System.Threading;
 
 namespace Red7.Core.Infrastructure
@@ -11,7 +12,7 @@ namespace Red7.Core.Infrastructure
         public string Name { get; }
         public Hand Hand { get; }
         public Palette Palette { get; }
-        public bool ActivePlayer { get; set; }
+        public bool Active { get; set; }
 
         public Player(string name)
         {
@@ -19,12 +20,17 @@ namespace Red7.Core.Infrastructure
             Name = name;
             Hand = new Hand(Id);
             Palette = new Palette(Id);
-            ActivePlayer = false;
+            Active = false;
         }
 
         public void AddCardToPalette(Card card)
         {
             Palette.Cards.Add(card);
+        }
+
+        public void RemoveCardFromHand(Card card)
+        {
+            Hand.Cards.RemoveAll(x => x.Color == card.Color && x.Value == card.Value);
         }
     }
 }

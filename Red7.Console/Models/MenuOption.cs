@@ -1,4 +1,6 @@
-﻿namespace Red7.ConsoleManager.Models
+﻿using Red7.Core.Components;
+
+namespace Red7.ConsoleManager.Models
 {
     public class SetupMenuOption
     {
@@ -24,5 +26,17 @@
         public ActionOption Option { get; }
         public bool Active { get; set; }
         public bool Legal { get; set; }
+    }
+
+    public class HandMenuOption
+    {
+        public HandMenuOption(Card card, bool active)
+        {
+            Card = card;
+            active = active;
+        }
+
+        public Card Card { get; }
+        public bool Active { get; set; }
     }
 }

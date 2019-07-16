@@ -72,7 +72,7 @@ namespace Red7.Core
                 if (isWinning)
                 {
                     var nextPlayer = GetNextPlayer(player);
-                    nextPlayer.ActivePlayer = true;
+                    nextPlayer.Active = true;
                 }
             }
         }
