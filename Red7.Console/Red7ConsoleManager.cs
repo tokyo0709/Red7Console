@@ -176,6 +176,7 @@ namespace Red7.ConsoleManager
                             SelectCardToPlayToPalette(game, activePlayer);
                             break;
                         case ActionOption.PlayToCanvas:
+                            SelectCardToPlayToCanvas(game, activePlayer);
                             break;
                         case ActionOption.PlayToPaletteThenCanvas:
                             break;
@@ -369,6 +370,77 @@ namespace Red7.ConsoleManager
             WriteSetupMenu(red7Game);
             EraseSettings();
             WriteSettings(red7Game);
+        }
+
+        private static void SelectCardToPlayToCanvas(Red7Game red7Game, Player activePlayer)
+        {
+            // Create a temporary hand menu defaulting to the first card as active
+            var hand = new HandMenu() { MenuOptions = activePlayer.Hand.Cards.Select(x => new HandMenuOption(x, false)).ToList() };
+            hand.MenuOptions.First().Active = true;
+
+            // Write Prompt to Action Section
+            WriteActionInputSectionBorder(Color.Yellow);
+            ConsoleHelper.WriteWordWrapAt(78, 6, 42, "Play", Color.White);
+            ConsoleHelper.DrawBoxedWord(11, 41, hand.MenuOptions.First().Card.Value.ToString(), ColorConverter.GetConsoleColor(hand.MenuOptions.First().Card.Color));
+            ConsoleHelper.WriteWordWrapAt(78, 15, 42, "to the Canvas (Left and right arrow keys to select your card)", Color.White);
+
+            // Card select loop
+            while (!Console.KeyAvailable)
+            {
+                var activeCard = hand.MenuOptions.Where(x => x.Active == true).First();
+
+                ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+                if (keyInfo.Key == ConsoleKey.LeftArrow)
+                {
+                    var index = hand.MenuOptions.FindIndex(y => y.Active);
+                    hand.MenuOptions.ElementAt(index).Active = false;
+                    if (index == 0)
+                        hand.MenuOptions.ElementAt(hand.MenuOptions.Count - 1).Active = true;
+                    else
+                        hand.MenuOptions.ElementAt(index - 1).Active = true;
+
+                    activeCard = hand.MenuOptions.Where(x => x.Active == true).First();
+
+                    ConsoleHelper.DrawBoxedWord(11, 41, activeCard.Card.Value.ToString(), ColorConverter.GetConsoleColor(activeCard.Card.Color));
+                }
+                else if (keyInfo.Key == ConsoleKey.RightArrow)
+                {
+                    var index = hand.MenuOptions.FindIndex(y => y.Active);
+                    hand.MenuOptions.ElementAt(index).Active = false;
+                    if (hand.MenuOptions.Count - 1 > index)
+                        hand.MenuOptions.ElementAt(index + 1).Active = true;
+                    else
+                        hand.MenuOptions.ElementAt(0).Active = true;
+
+                    activeCard = hand.MenuOptions.Where(x => x.Active == true).First();
+
+                    ConsoleHelper.DrawBoxedWord(11, 41, activeCard.Card.Value.ToString(), ColorConverter.GetConsoleColor(activeCard.Card.Color));
+                }
+                else if (keyInfo.Key == ConsoleKey.Enter)
+                {
+                    var selectedOption = hand.MenuOptions.Where(x => x.Active).First();
+
+                    //if (GameLogic.IsWinning(red7Game, selectedOption.Card))
+                    //{
+                    //    activePlayer.AddCardToPalette(selectedOption.Card);
+                    //    activePlayer.RemoveCardFromHand(selectedOption.Card);
+
+                    //    activePlayer.Active = false;
+                    //    red7Game.GetNextPlayer(activePlayer).Active = true;
+
+                    //    // Write out as previous action in ActionOutputSection
+                    //    EraseActionHistorySection();
+                    //    ConsoleHelper.WriteWordWrapAt(78, 6, 37, $"{activePlayer.Name} played a", Color.White);
+                    //    ConsoleHelper.DrawBoxedWord(6 + activePlayer.Name.Length + 10, 36, selectedOption.Card.Value.ToString(), ColorConverter.GetConsoleColor(selectedOption.Card.Color));
+                    //    ConsoleHelper.WriteWordWrapAt(78, 6 + activePlayer.Name.Length + 10 + 3, 37, " to their Palette", Color.White);
+
+                    //    WriteActionInputSectionBorder(Color.White);
+                    //    EraseActionInputSection();
+                    //    DrawPlayerBoards(red7Game);
+                    //    break;
+                    //}
+                }
+            }
         }
 
         private static void SelectCardToPlayToPalette(Red7Game red7Game, Player activePlayer)

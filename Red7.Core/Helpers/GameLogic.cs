@@ -11,6 +11,17 @@ namespace Red7.Core.Helpers
 
     public static class GameLogic
     {
+        public static bool IsWinning(Red7Game game, Color canvasColorPlayed)
+        {
+            var colorRule = ColorRules.GetRuleByColor(canvasColorPlayed);
+            var activePlayer = game.Players.Where(x => x.Active).First();
+
+            var activePlayerPalette = activePlayer.Palette.CloneJson();
+            var opponentPalettes = game.Players.Where(x => !x.Active).Select(y => y.Palette).ToList();
+
+            return IsWinningPalette(game.Canvas.Cards.Last().Color, activePlayerPalette, opponentPalettes, colorRule);
+        }
+
         public static bool IsWinning(Red7Game game, Card cardPlayed)
         {
             var colorRule = ColorRules.GetRuleByColor(game.Canvas.Cards.Last().Color);
@@ -100,31 +111,40 @@ namespace Red7.Core.Helpers
 
         private static bool IsWinningOrangeRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
         {
+            // Most of One Number
+
+            // Find the most frequent Value then if tied the highest value set
+            //var activePlayerHighOneNumberSet = activePlayerPalette.Cards.Max(x => x.Value)
             throw new NotImplementedException();
         }
 
         private static bool IsWinningYellowRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
         {
+            // Most of One Color
             throw new NotImplementedException();
         }
 
         private static bool IsWinningGreenRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
         {
+            // Most Even Cards
             throw new NotImplementedException();
         }
 
         private static bool IsWinningBlueRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
         {
+            // Most Different Colors
             throw new NotImplementedException();
         }
 
         private static bool IsWinningIndigoRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
         {
+            // Most Cards in a Row
             throw new NotImplementedException();
         }
 
         private static bool IsWinningVioletRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
         {
+            // Most Cards Below 4
             throw new NotImplementedException();
         }
     }
