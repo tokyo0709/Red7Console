@@ -6,6 +6,6 @@ namespace Red7.ConsoleManager.Models
 {
     public class SetupMenu
     {
-        public List<MenuOption> MenuOptions { get; set; }
+        public List<SetupMenuOption> MenuOptions { get; set; }
     }
 }

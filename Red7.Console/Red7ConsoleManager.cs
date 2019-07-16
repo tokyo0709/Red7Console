@@ -26,13 +26,23 @@ namespace Red7.ConsoleManager
         private static bool OtherPlayerBoardsMasked { get; set; } = false;
         private static SetupMenu SetupMenu { get; } = new SetupMenu
         {
-            MenuOptions = new List<MenuOption>()
+            MenuOptions = new List<SetupMenuOption>()
             {
-                new MenuOption(Option.AddPlayers, true),
-                new MenuOption(Option.DiscardDrawRule, false),
-                new MenuOption(Option.ScoringRule, false),
-                new MenuOption(Option.ActionRule, false),
-                new MenuOption(Option.GameStart, false)
+                new SetupMenuOption(SetupOption.AddPlayers, true),
+                new SetupMenuOption(SetupOption.DiscardDrawRule, false),
+                new SetupMenuOption(SetupOption.ScoringRule, false),
+                new SetupMenuOption(SetupOption.ActionRule, false),
+                new SetupMenuOption(SetupOption.GameStart, false)
+            }
+        };
+        private static ActionMenu ActionMenu { get; } = new ActionMenu
+        {
+            MenuOptions = new List<ActionMenuOption>()
+            {
+                new ActionMenuOption(ActionOption.PlayToPalette, true),
+                new ActionMenuOption(ActionOption.PlayToCanvas, false),
+                new ActionMenuOption(ActionOption.PlayToPaletteThenCanvas, false),
+                new ActionMenuOption(ActionOption.Fold, false)
             }
         };
 
@@ -45,7 +55,7 @@ namespace Red7.ConsoleManager
 
             WriteFigletTitle();
             ConsoleHelper.DrawBorder(Color.Red, 1, 6, 65, 34, true); // Menu Border
-            ConsoleHelper.DrawBorder(Color.White, 69, 0, 50, 40, true); // Setup Option Display Border
+            ConsoleHelper.DrawBorder(Color.White, 69, 0, 51, 40, true); // Setup Option Display Border
 
             WriteSetupMenu(red7Game); // Setup Menu
             WriteConsoleSectionBorder(Color.White); // Input Output Setup Section
@@ -78,7 +88,7 @@ namespace Red7.ConsoleManager
 
                     WriteSetupMenu(red7Game);
                 }
-                else if (keyInfo.Key == ConsoleKey.Enter && SetupMenu.MenuOptions.Where(x => x.Active).First().Option == Option.GameStart)
+                else if (keyInfo.Key == ConsoleKey.Enter && SetupMenu.MenuOptions.Where(x => x.Active).First().Option == SetupOption.GameStart)
                 {
                     red7Game.BeginGame();
                     break;
@@ -89,16 +99,16 @@ namespace Red7.ConsoleManager
 
                     switch (selectedOption.Option)
                     {
-                        case Option.AddPlayers:
+                        case SetupOption.AddPlayers:
                             AddPlayerPrompt(red7Game);
                             break;
-                        case Option.DiscardDrawRule:
+                        case SetupOption.DiscardDrawRule:
                             ToggleDiscardDrawRule(red7Game);
                             break;
-                        case Option.ScoringRule:
+                        case SetupOption.ScoringRule:
                             ToggleScoringRule(red7Game);
                             break;
-                        case Option.ActionRule:
+                        case SetupOption.ActionRule:
                             ToggleActionRule(red7Game);
                             break;
                         default:
@@ -119,11 +129,59 @@ namespace Red7.ConsoleManager
             Console.SetWindowSize(WidthValue, HeightValue);
             Console.SetBufferSize(WidthValue, HeightValue);
 
-            ConsoleHelper.DrawBorder(Color.FloralWhite, 0, 0, WidthValue, BoardHeightValue, true); // Player Board Section Border
+            ConsoleHelper.DrawBorder(Color.FloralWhite, 0, 0, WidthValue, BoardHeightValue, false); // Player Board Section Border
+            DrawBoards(game);
             ConsoleHelper.DrawBorder(Color.White, 0, BoardHeightValue, WidthValue, HeightValue - BoardHeightValue, false); // Action Section Border
+            WriteActionMenu();
             WriteActionSectionBorder(Color.White); // Action Input/Output Section
 
             DrawRuleHelper(); // ROYGBIV Color Reference Helper
+
+            // Action Menu Loop
+            while (!Console.KeyAvailable)
+            {
+                ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+                if (keyInfo.Key == ConsoleKey.UpArrow)
+                {
+                    var index = ActionMenu.MenuOptions.FindIndex(y => y.Active);
+                    ActionMenu.MenuOptions.ElementAt(index).Active = false;
+                    if (index == 0)
+                        ActionMenu.MenuOptions.ElementAt(ActionMenu.MenuOptions.Count - 1).Active = true;
+                    else
+                        ActionMenu.MenuOptions.ElementAt(index - 1).Active = true;
+
+                    WriteActionMenu();
+                }
+                else if (keyInfo.Key == ConsoleKey.DownArrow)
+                {
+                    var index = ActionMenu.MenuOptions.FindIndex(y => y.Active);
+                    ActionMenu.MenuOptions.ElementAt(index).Active = false;
+                    if (ActionMenu.MenuOptions.Count - 1 > index)
+                        ActionMenu.MenuOptions.ElementAt(index + 1).Active = true;
+                    else
+                        ActionMenu.MenuOptions.ElementAt(0).Active = true;
+
+                    WriteActionMenu();
+                }
+                else if (keyInfo.Key == ConsoleKey.Enter)
+                {
+                    var selectedOption = ActionMenu.MenuOptions.Where(x => x.Active).First();
+
+                    switch (selectedOption.Option)
+                    {
+                        case ActionOption.PlayToPalette:
+                            break;
+                        case ActionOption.PlayToCanvas:
+                            break;
+                        case ActionOption.PlayToPaletteThenCanvas:
+                            break;
+                        case ActionOption.Fold:
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
         }
 
         public static void DrawRuleHelper()
@@ -251,8 +309,6 @@ namespace Red7.ConsoleManager
             ConsoleHelper.DrawBoxedWord(19, 19, $"{ColorRules.GetRuleByColor(activeCanvasCard.Color).RuleDescription}", ColorConverter.GetConsoleColor(activeCanvasCard.Color));
 
             Console.CursorVisible = false;
-
-            Console.ReadLine();
         }
 
         private static void WriteFigletTitle()
@@ -274,29 +330,29 @@ namespace Red7.ConsoleManager
 
         private static void WriteConsoleSectionBorder(Color color)
         {
-            ConsoleHelper.DrawBorder(color, 5, 33, 57, 5);
+            ConsoleHelper.DrawBorder(color, 4, 34, 59, 5);
         }
 
         private static void WriteActionSectionBorder(Color color)
         {
-            ConsoleHelper.DrawBorder(color, 4, 39, 80, 5);
+            ConsoleHelper.DrawBorder(color, 4, 39, 80, 6);
         }
 
         private static void AddPlayerPrompt(Red7Game red7Game)
         {
-            SetupMenu.MenuOptions.Where(x => x.Option == Option.AddPlayers).First().Active = false;
+            SetupMenu.MenuOptions.Where(x => x.Option == SetupOption.AddPlayers).First().Active = false;
             WriteSetupMenu(red7Game);
 
             WriteConsoleSectionBorder(Color.Yellow);
-            ConsoleHelper.WriteWordWrapAt(58, 7, 35, "Add Player: ", Color.White);
-            Console.SetCursorPosition(19, 35);
+            ConsoleHelper.WriteWordWrapAt(58, 7, 36, "Add Player: ", Color.White);
+            Console.SetCursorPosition(19, 36);
             Console.CursorVisible = true;
 
             var playerName = Console.ReadLine();
             Console.CursorVisible = false;
 
             red7Game.Players.Add(new Player(playerName));
-            SetupMenu.MenuOptions.Where(x => x.Option == Option.AddPlayers).First().Active = true;
+            SetupMenu.MenuOptions.Where(x => x.Option == SetupOption.AddPlayers).First().Active = true;
 
             EraseOutputSection();
             WriteConsoleSectionBorder(Color.White);
@@ -370,11 +426,19 @@ namespace Red7.ConsoleManager
         private static void WriteSetupMenu(Red7Game game)
         {
             WriteIntroduction(58, 5, 9, Color.White);
-            WriteAddPlayer(58, 5, 12, SetupMenu.MenuOptions.Where(x => x.Option == Option.AddPlayers).First().Active ? Color.Yellow : Color.White);
-            WriteDiscardDrawRule(58, 5, 14, SetupMenu.MenuOptions.Where(x => x.Option == Option.DiscardDrawRule).First().Active ? Color.Yellow : Color.White, game);
-            WriteScoringRule(58, 5, 18, SetupMenu.MenuOptions.Where(x => x.Option == Option.ScoringRule).First().Active ? Color.Yellow : Color.White, game);
-            WriteActionRule(58, 5, 21, SetupMenu.MenuOptions.Where(x => x.Option == Option.ActionRule).First().Active ? Color.Yellow : Color.White, game);
-            WriteGameStart(58, 5, 24, SetupMenu.MenuOptions.Where(x => x.Option == Option.GameStart).First().Active ? Color.Yellow : Color.White, game);
+            WriteAddPlayer(58, 5, 12, SetupMenu.MenuOptions.Where(x => x.Option == SetupOption.AddPlayers).First().Active ? Color.Yellow : Color.White);
+            WriteDiscardDrawRule(58, 5, 14, SetupMenu.MenuOptions.Where(x => x.Option == SetupOption.DiscardDrawRule).First().Active ? Color.Yellow : Color.White, game);
+            WriteScoringRule(58, 5, 18, SetupMenu.MenuOptions.Where(x => x.Option == SetupOption.ScoringRule).First().Active ? Color.Yellow : Color.White, game);
+            WriteActionRule(58, 5, 21, SetupMenu.MenuOptions.Where(x => x.Option == SetupOption.ActionRule).First().Active ? Color.Yellow : Color.White, game);
+            WriteGameStart(58, 5, 24, SetupMenu.MenuOptions.Where(x => x.Option == SetupOption.GameStart).First().Active ? Color.Yellow : Color.White, game);
+        }
+
+        private static void WriteActionMenu()
+        {
+            WritePaletteAction(80, 4, BoardHeightValue + 2, ActionMenu.MenuOptions.Where(x => x.Option == ActionOption.PlayToPalette).First().Active ? Color.Yellow : Color.White);
+            WriteCanvasAction(80, 4, BoardHeightValue + 5, ActionMenu.MenuOptions.Where(x => x.Option == ActionOption.PlayToCanvas).First().Active ? Color.Yellow : Color.White);
+            WritePaletteCanvasAction(80, 4, BoardHeightValue + 8, ActionMenu.MenuOptions.Where(x => x.Option == ActionOption.PlayToPaletteThenCanvas).First().Active ? Color.Yellow : Color.White);
+            WriteFoldAction(80, 4, BoardHeightValue + 11, ActionMenu.MenuOptions.Where(x => x.Option == ActionOption.Fold).First().Active ? Color.Yellow : Color.White);
         }
 
         private static void EraseOutputSection()
@@ -419,6 +483,26 @@ namespace Red7.ConsoleManager
         private static void WriteGameStart(int width, int left, int top, Color color, Red7Game game)
         {
             ConsoleHelper.WriteWordWrapAt(width, left, top, "5) Start Game", color);
+        }
+
+        private static void WritePaletteAction(int width, int left, int top, Color color)
+        {
+            ConsoleHelper.WriteWordWrapAt(width, left, top, "1) Play a card to your Palette", color);
+        }
+
+        private static void WriteCanvasAction(int width, int left, int top, Color color)
+        {
+            ConsoleHelper.WriteWordWrapAt(width, left, top, "2) Play a card to the Canvas", color);
+        }
+
+        private static void WritePaletteCanvasAction(int width, int left, int top, Color color)
+        {
+            ConsoleHelper.WriteWordWrapAt(width, left, top, "3) Play a card to your Palette and then the Canvas", color);
+        }
+
+        private static void WriteFoldAction(int width, int left, int top, Color color)
+        {
+            ConsoleHelper.WriteWordWrapAt(width, left, top, "4) Resign from this round", color);
         }
     }
 }

@@ -20,9 +20,6 @@ namespace Red7Console
 
             Red7ConsoleManager.InitializeConsoleSetup(red7Game);
             Red7ConsoleManager.InitializeConsoleGame(red7Game);
-            Red7ConsoleManager.DrawBoards(red7Game);
-
-            Console.ReadLine();
         }
 
     }

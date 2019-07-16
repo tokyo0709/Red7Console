@@ -1,6 +1,6 @@
 ﻿namespace Red7.ConsoleManager.Models
 {
-    public enum Option
+    public enum SetupOption
     {
         AddPlayers,
         DiscardDrawRule,

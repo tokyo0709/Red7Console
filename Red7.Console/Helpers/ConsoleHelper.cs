@@ -106,53 +106,27 @@ namespace Red7.ConsoleManager.Helpers
                     if (j == originY)
                     {
                         if (i == originX)
-                            WriteAt(i, j, "┌", color);
+                            WriteAt(i, j, doubleBorder ? "╔" : "┌", color);
                         else if (i == originX + width - 1)
-                            WriteAt(i, j, "┐", color);
+                            WriteAt(i, j, doubleBorder ? "╗" : "┐", color);
                         else
-                            WriteAt(i, j, "─", color);
-                    }
-                    else if (j == originY + 1 && doubleBorder)
-                    {
-                        if (i == originX)
-                            WriteAt(i, j, "│", color);
-                        else if (i == originX + 2)
-                            WriteAt(i, j, "┌", color);
-                        else if (i == originX + width - 1)
-                            WriteAt(i, j, "│", color);
-                        else if (i == originX + width - 3)
-                            WriteAt(i, j, "┐", color);
-                        else if (i != originX + 1 && i != originX + width - 2)
-                            WriteAt(i, j, "─", color);
+                            WriteAt(i, j, doubleBorder ? "═" : "─", color);
                     }
                     else if (j == originY + height - 1)
                     {
                         if (i == originX)
-                            WriteAt(i, j, "└", color);
+                            WriteAt(i, j, doubleBorder ? "╚" : "└", color);
                         else if (i == originX + width - 1)
-                            WriteAt(i, j, "┘", color);
+                            WriteAt(i, j, doubleBorder ? "╝" : "┘", color);
                         else
-                            WriteAt(i, j, "─", color);
-                    }
-                    else if (j == originY + height - 2 && doubleBorder)
-                    {
-                        if (i == originX)
-                            WriteAt(i, j, "│", color);
-                        else if (i == originX + 2)
-                            WriteAt(i, j, "└", color);
-                        else if (i == originX + width - 1)
-                            WriteAt(i, j, "│", color);
-                        else if (i == originX + width - 3)
-                            WriteAt(i, j, "┘", color);
-                        else if (i != originX + 1 && i != originX + width - 2)
-                            WriteAt(i, j, "─", color);
+                            WriteAt(i, j, doubleBorder ? "═" : "─", color);
                     }
                     else
                     {
-                        if (i == originX || (i == originX + 2 && doubleBorder))
-                            WriteAt(i, j, "│", color);
-                        else if (i == originX + width - 1 || (i == originX + width - 3 && doubleBorder))
-                            WriteAt(i, j, "│", color);
+                        if (i == originX)
+                            WriteAt(i, j, doubleBorder ? "║" : "│", color);
+                        else if (i == originX + width - 1)
+                            WriteAt(i, j, doubleBorder ? "║" : "│", color);
                     }
                 }
             }
