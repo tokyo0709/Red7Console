@@ -53,6 +53,14 @@ namespace Red7.Core.Helpers
             return IsWinningPalette(canvasColor, activePlayerPalette, opponentPalettes, colorRule);
         }
 
+        public static bool IsWinningColor(Color activeColor, Color opponnentColor)
+        {
+            if (activeColor == opponnentColor)
+                throw new Exception("Cannot compare the same color");
+
+            return activeColor > opponnentColor;
+        }
+
         public static Card CompareAndGetHighestValueCard(Card first, Card second)
         {
             if (first.Value > second.Value)
@@ -70,7 +78,7 @@ namespace Red7.Core.Helpers
                 return second;
         }
 
-        private static bool IsWinningPalette(Color canvasColor, Palette activePlayerPalette, List<Palette> opponentPalettes, ColorRule colorRule)
+        public static bool IsWinningPalette(Color canvasColor, Palette activePlayerPalette, List<Palette> opponentPalettes, ColorRule colorRule)
         {
             switch (colorRule.Color)
             {
@@ -114,14 +122,59 @@ namespace Red7.Core.Helpers
             // Most of One Number
 
             // Find the most frequent Value then if tied the highest value set
-            //var activePlayerHighOneNumberSet = activePlayerPalette.Cards.Max(x => x.Value)
-            throw new NotImplementedException();
+            var activePlayerHighOneNumberSet = activePlayerPalette.Cards
+                .GroupBy(x => x.Value)
+                .Select(group => new { Value = group.Key, Count = group.Count() })
+                .OrderByDescending(y => y.Count)
+                .ThenByDescending(z => z.Value)
+                .First();
+
+            foreach (var palette in opponentPalettes)
+            {
+                var currentPlayerHighOneNumberSet = palette.Cards
+                    .GroupBy(x => x.Value)
+                    .Select(group => new { Value = group.Key, Count = group.Count() })
+                    .OrderByDescending(y => y.Count)
+                    .ThenByDescending(z => z.Value)
+                    .First();
+
+                if (currentPlayerHighOneNumberSet.Count > activePlayerHighOneNumberSet.Count) return false;
+
+                if (currentPlayerHighOneNumberSet.Count == activePlayerHighOneNumberSet.Count &&
+                    currentPlayerHighOneNumberSet.Value > activePlayerHighOneNumberSet.Value) return false;
+            }
+
+            return true;
         }
 
         private static bool IsWinningYellowRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
         {
             // Most of One Color
-            throw new NotImplementedException();
+
+            // Find the most frequent Color then if tied the highest value set
+            var activePlayerHighOneColorSet = activePlayerPalette.Cards
+                .GroupBy(x => x.Color)
+                .Select(group => new { Value = group.Key, Count = group.Count() })
+                .OrderByDescending(y => y.Count)
+                .ThenByDescending(z => z.Value)
+                .First();
+
+            foreach (var palette in opponentPalettes)
+            {
+                var currentPlayerHighOneColorSet = palette.Cards
+                    .GroupBy(x => x.Color)
+                    .Select(group => new { Value = group.Key, Count = group.Count() })
+                    .OrderByDescending(y => y.Count)
+                    .ThenByDescending(z => z.Value)
+                    .First();
+
+                if (currentPlayerHighOneColorSet.Count > activePlayerHighOneColorSet.Count) return false;
+
+                if (currentPlayerHighOneColorSet.Count == activePlayerHighOneColorSet.Count &&
+                    IsWinningColor(currentPlayerHighOneColorSet.Value, activePlayerHighOneColorSet.Value)) return false;
+            }
+
+            return true;
         }
 
         private static bool IsWinningGreenRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
