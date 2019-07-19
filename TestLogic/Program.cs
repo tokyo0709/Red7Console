@@ -11,6 +11,8 @@ namespace TestLogic
     {
         static void Main(string[] args)
         {
+            
+
             var activePalette = new Palette(1)
             {
                 Cards = new List<Card>
@@ -37,7 +39,7 @@ namespace TestLogic
                     },
                     new Card
                     {
-                        Color = Color.Yellow,
+                        Color = Color.Indigo,
                         Value = 4
                     },
                 }
@@ -106,6 +108,8 @@ namespace TestLogic
                     },
                 }
             });
+
+            GameLogic.IsWinningGreenRule(activePalette, opponentPalettes);
 
             GameLogic.IsWinningPalette(Color.Orange, activePalette, opponentPalettes, ColorRules.GetRuleByColor(Color.Orange));
 

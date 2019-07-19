@@ -177,10 +177,36 @@ namespace Red7.Core.Helpers
             return true;
         }
 
-        private static bool IsWinningGreenRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
+        public static bool IsWinningGreenRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
         {
             // Most Even Cards
-            throw new NotImplementedException();
+            var activePlayerEvenCards = activePlayerPalette.Cards
+                .Where(x => x.Value % 2 == 0)
+                .OrderByDescending(y => y.Value)
+                .ThenByDescending(z => z.Color)
+                .ToList();
+
+            foreach (var palette in opponentPalettes)
+            {
+                var currentPlayerEvenCards = palette.Cards
+                    .Where(x => x.Value % 2 == 0)
+                    .OrderByDescending(y => y.Value)
+                    .ThenByDescending(z => z.Color)
+                    .ToList();
+
+                // Total number matching the rule
+                if (currentPlayerEvenCards.Count > activePlayerEvenCards.Count) return false;
+
+                // Highest value comparison
+                if (currentPlayerEvenCards.Count == activePlayerEvenCards.Count)
+                {
+                    if (currentPlayerEvenCards.First().Value > activePlayerEvenCards.First().Value) return false;
+                    if (currentPlayerEvenCards.First().Value == activePlayerEvenCards.First().Value &&
+                        IsWinningColor(currentPlayerEvenCards.First().Color, activePlayerEvenCards.First().Color)) return false;
+                }
+            }
+
+            return true;
         }
 
         private static bool IsWinningBlueRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
