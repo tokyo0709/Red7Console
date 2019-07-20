@@ -1,4 +1,5 @@
-﻿using Red7.Core.Components;
+﻿using MoreLinq;
+using Red7.Core.Components;
 using Red7.Core.Enums;
 using Red7.Core.Infrastructure;
 using System;
@@ -209,10 +210,38 @@ namespace Red7.Core.Helpers
             return true;
         }
 
-        private static bool IsWinningBlueRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
+        public static bool IsWinningBlueRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
         {
             // Most Different Colors
-            throw new NotImplementedException();
+
+            // Get highest value unique color cards
+            var activePlayerHighestValUniqueCards = activePlayerPalette.Cards
+                .OrderByDescending(x => x.Value)
+                .ThenByDescending(y => y.Color)
+                .DistinctBy(z => z.Color)
+                .ToList();
+
+            foreach (var palette in opponentPalettes)
+            {
+                var currentPlayerHighestValUniqueCards = palette.Cards
+                    .OrderByDescending(x => x.Value)
+                    .ThenByDescending(y => y.Color)
+                    .DistinctBy(z => z.Color)
+                    .ToList();
+
+                // Total number matching the rule
+                if (currentPlayerHighestValUniqueCards.Count > activePlayerHighestValUniqueCards.Count) return false;
+
+                // Highest value comparison
+                if (currentPlayerHighestValUniqueCards.Count == activePlayerHighestValUniqueCards.Count)
+                {
+                    if (currentPlayerHighestValUniqueCards.First().Value > activePlayerHighestValUniqueCards.First().Value) return false;
+                    if (currentPlayerHighestValUniqueCards.First().Value == activePlayerHighestValUniqueCards.First().Value &&
+                        IsWinningColor(currentPlayerHighestValUniqueCards.First().Color, activePlayerHighestValUniqueCards.First().Color)) return false;
+                }
+            }
+
+            return true;
         }
 
         private static bool IsWinningIndigoRule(Palette activePlayerPalette, List<Palette> opponentPalettes)

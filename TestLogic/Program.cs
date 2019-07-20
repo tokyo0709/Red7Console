@@ -29,18 +29,18 @@ namespace TestLogic
                     },
                     new Card
                     {
-                        Color = Color.Yellow,
-                        Value = 3
+                        Color = Color.Indigo,
+                        Value = 5
                     },
                     new Card
                     {
-                        Color = Color.Red,
+                        Color = Color.Blue,
                         Value = 2
                     },
                     new Card
                     {
-                        Color = Color.Indigo,
-                        Value = 4
+                        Color = Color.Green,
+                        Value = 5
                     },
                 }
             };
@@ -109,7 +109,7 @@ namespace TestLogic
                 }
             });
 
-            GameLogic.IsWinningGreenRule(activePalette, opponentPalettes);
+            GameLogic.IsWinningBlueRule(activePalette, opponentPalettes);
 
             GameLogic.IsWinningPalette(Color.Orange, activePalette, opponentPalettes, ColorRules.GetRuleByColor(Color.Orange));
 
