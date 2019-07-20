@@ -236,6 +236,8 @@ namespace Red7.Core.Helpers
                 if (currentPlayerHighestValUniqueCards.Count == activePlayerHighestValUniqueCards.Count)
                 {
                     if (currentPlayerHighestValUniqueCards.First().Value > activePlayerHighestValUniqueCards.First().Value) return false;
+
+                    // Color comparison
                     if (currentPlayerHighestValUniqueCards.First().Value == activePlayerHighestValUniqueCards.First().Value &&
                         IsWinningColor(currentPlayerHighestValUniqueCards.First().Color, activePlayerHighestValUniqueCards.First().Color)) return false;
                 }
@@ -247,13 +249,90 @@ namespace Red7.Core.Helpers
         public static bool IsWinningIndigoRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
         {
             // Most Cards in a Row
-            throw new NotImplementedException();
+            var activePlayerSequentialList = GetSequentialCardsList(activePlayerPalette);
+            var activePlayerOrderedSequentialList = activePlayerSequentialList
+                .OrderByDescending(x => x.Count)
+                .ToList();
+
+            var activePlayerHighestCountList = activePlayerOrderedSequentialList.First();
+
+            foreach (var palette in opponentPalettes)
+            {
+                var opponentSequentialList = GetSequentialCardsList(palette);
+                var opponentOrderedSequentialList = opponentSequentialList
+                    .OrderByDescending(x => x.Count)
+                    .ToList();
+
+                var opponentHighestCountList = opponentOrderedSequentialList.First();
+
+                // Total number matching the rule
+                if (opponentOrderedSequentialList.First().Count > activePlayerHighestCountList.Count) return false;
+
+                // Highest value comparison
+                if (opponentHighestCountList.Count == activePlayerHighestCountList.Count)
+                {
+                    if (opponentHighestCountList.First().Value > activePlayerHighestCountList.First().Value) return false;
+
+                    // Color comparison
+                    if (opponentHighestCountList.First().Value == activePlayerHighestCountList.First().Value &&
+                        IsWinningColor(opponentHighestCountList.First().Color, activePlayerHighestCountList.First().Color)) return false;
+                }
+            }
+
+            return true;
         }
+
+        
 
         public static bool IsWinningVioletRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
         {
             // Most Cards Below 4
             throw new NotImplementedException();
+        }
+
+        private static List<List<Card>> GetSequentialCardsList(Palette palette)
+        {
+            var activePlayerOrderedCards = palette.Cards
+                            .OrderByDescending(x => x.Value)
+                            .ThenByDescending(y => y.Color)
+                            .ToList();
+
+            // Get a list of sequential lists
+            var listOfSequentialCards = new List<List<Card>>();
+            var currentIndex = 0;
+
+            foreach (var card in activePlayerOrderedCards)
+            {
+                // Check that we are still operating on the current sequential list
+                if (listOfSequentialCards.Count == 0)
+                {
+                    // Need to generate a new sequential list
+                    var newSeqList = new List<Card>();
+                    newSeqList.Add(card);
+
+                    listOfSequentialCards.Add(newSeqList);
+                }
+                else
+                {
+                    // Get current list at index
+                    var currentList = listOfSequentialCards.ElementAt(currentIndex);
+
+                    // Add card to list if it is one below the last cards value
+                    if (currentList.Last().Value - 1 == card.Value)
+                        currentList.Add(card);
+                    else if (currentList.Last().Value - 1 > card.Value) // Increment index if more than 1 value apart
+                    {
+                        // Need to generate a new sequential list
+                        var newSeqList = new List<Card>();
+                        newSeqList.Add(card);
+
+                        listOfSequentialCards.Add(newSeqList);
+                        currentIndex++;
+                    }
+                }
+            }
+
+            return listOfSequentialCards;
         }
     }
 }
