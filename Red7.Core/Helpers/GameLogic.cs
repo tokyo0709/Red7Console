@@ -287,7 +287,34 @@ namespace Red7.Core.Helpers
         public static bool IsWinningVioletRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
         {
             // Most Cards Below 4
-            throw new NotImplementedException();
+            var activePlayerHighestValueCardsBelowFour = activePlayerPalette.Cards
+                .Where(x => x.Value < 4)
+                .OrderByDescending(x => x.Value)
+                .ThenByDescending(y => y.Color)
+                .ToList();
+
+            foreach (var palette in opponentPalettes)
+            {
+                var opponentHighestValueCardsBelowFour = palette.Cards
+                    .Where(x => x.Value < 4)
+                    .OrderByDescending(x => x.Value)
+                    .ThenByDescending(y => y.Color)
+                    .ToList();
+
+                // Total number matching rule
+                if (opponentHighestValueCardsBelowFour.Count > activePlayerHighestValueCardsBelowFour.Count) return false;
+
+                // Highest value matching rule
+                if (opponentHighestValueCardsBelowFour.Count == activePlayerHighestValueCardsBelowFour.Count)
+                {
+                    if (opponentHighestValueCardsBelowFour.First().Value > activePlayerHighestValueCardsBelowFour.First().Value) return false;
+
+                    if (opponentHighestValueCardsBelowFour.First().Value == activePlayerHighestValueCardsBelowFour.First().Value &&
+                        IsWinningColor(opponentHighestValueCardsBelowFour.First().Color, activePlayerHighestValueCardsBelowFour.First().Color)) return false;
+                }
+            }
+
+            return true;
         }
 
         private static List<List<Card>> GetSequentialCardsList(Palette palette)
