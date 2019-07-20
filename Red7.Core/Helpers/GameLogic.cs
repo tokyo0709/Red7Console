@@ -102,7 +102,7 @@ namespace Red7.Core.Helpers
             }
         }
 
-        private static bool IsWinningRedRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
+        public static bool IsWinningRedRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
         {
             // Highest Card
             var activePlayerHighestCard = activePlayerPalette.GetHighestCard();
@@ -118,7 +118,7 @@ namespace Red7.Core.Helpers
             return true;
         }
 
-        private static bool IsWinningOrangeRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
+        public static bool IsWinningOrangeRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
         {
             // Most of One Number
 
@@ -148,7 +148,7 @@ namespace Red7.Core.Helpers
             return true;
         }
 
-        private static bool IsWinningYellowRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
+        public static bool IsWinningYellowRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
         {
             // Most of One Color
 
@@ -244,13 +244,13 @@ namespace Red7.Core.Helpers
             return true;
         }
 
-        private static bool IsWinningIndigoRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
+        public static bool IsWinningIndigoRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
         {
             // Most Cards in a Row
             throw new NotImplementedException();
         }
 
-        private static bool IsWinningVioletRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
+        public static bool IsWinningVioletRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
         {
             // Most Cards Below 4
             throw new NotImplementedException();

@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Red7.ConsoleManager", "Red7
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Red7.Game", "Red7.Game\Red7.Game.csproj", "{7B3FC9AF-33D1-4305-8929-DD45D0C2FEC7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLogic", "TestLogic\TestLogic.csproj", "{761F9901-DEC0-49E0-8E97-BD4B80E939E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestLogic", "TestLogic\TestLogic.csproj", "{761F9901-DEC0-49E0-8E97-BD4B80E939E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Red7.Core.Tests", "Red7.Core.Tests\Red7.Core.Tests.csproj", "{D57EA542-3039-4C2C-A095-4A929742C4C2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{761F9901-DEC0-49E0-8E97-BD4B80E939E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{761F9901-DEC0-49E0-8E97-BD4B80E939E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{761F9901-DEC0-49E0-8E97-BD4B80E939E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D57EA542-3039-4C2C-A095-4A929742C4C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D57EA542-3039-4C2C-A095-4A929742C4C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D57EA542-3039-4C2C-A095-4A929742C4C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D57EA542-3039-4C2C-A095-4A929742C4C2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
