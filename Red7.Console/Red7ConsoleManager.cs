@@ -244,12 +244,22 @@ namespace Red7.ConsoleManager
             ConsoleHelper.WriteAt(WidthValue - 7, 20, ">", Color.White);
             ConsoleHelper.DrawBoxedWord(WidthValue - 5, 19, "V", ColorConverter.GetConsoleColor(Core.Enums.Color.Violet));
 
+            DrawCanvas(red7Game);
+
+            Console.CursorVisible = false;
+        }
+
+        private static void DrawCanvas(Red7Game red7Game)
+        {
             var activeCanvasCard = red7Game.Canvas.GetActiveCanvasCard();
             ConsoleHelper.DrawBoxedWord(4, 19, "Canvas", Color.White);
             ConsoleHelper.DrawBoxedWord(14, 19, $"{activeCanvasCard.Value}", ColorConverter.GetConsoleColor(activeCanvasCard.Color));
             ConsoleHelper.DrawBoxedWord(19, 19, $"{ColorRules.GetRuleByColor(activeCanvasCard.Color).RuleDescription}", ColorConverter.GetConsoleColor(activeCanvasCard.Color));
+        }
 
-            Console.CursorVisible = false;
+        private static void EraseCanvas()
+        {
+            ConsoleHelper.EraseSection(40, 3, 14, 19);
         }
 
         private static void DrawPlayerBoards(Red7Game red7Game)
@@ -420,25 +430,28 @@ namespace Red7.ConsoleManager
                 {
                     var selectedOption = hand.MenuOptions.Where(x => x.Active).First();
 
-                    //if (GameLogic.IsWinning(red7Game, selectedOption.Card))
-                    //{
-                    //    activePlayer.AddCardToPalette(selectedOption.Card);
-                    //    activePlayer.RemoveCardFromHand(selectedOption.Card);
+                    if (GameLogic.IsWinning(red7Game, selectedOption.Card.Color))
+                    {
+                        red7Game.Canvas.AddCardToCanvas(selectedOption.Card);
+                        activePlayer.RemoveCardFromHand(selectedOption.Card);
 
-                    //    activePlayer.Active = false;
-                    //    red7Game.GetNextPlayer(activePlayer).Active = true;
+                        activePlayer.Active = false;
+                        red7Game.GetNextPlayer(activePlayer).Active = true;
 
-                    //    // Write out as previous action in ActionOutputSection
-                    //    EraseActionHistorySection();
-                    //    ConsoleHelper.WriteWordWrapAt(78, 6, 37, $"{activePlayer.Name} played a", Color.White);
-                    //    ConsoleHelper.DrawBoxedWord(6 + activePlayer.Name.Length + 10, 36, selectedOption.Card.Value.ToString(), ColorConverter.GetConsoleColor(selectedOption.Card.Color));
-                    //    ConsoleHelper.WriteWordWrapAt(78, 6 + activePlayer.Name.Length + 10 + 3, 37, " to their Palette", Color.White);
+                        // Write out as previous action in ActionOutputSection
+                        EraseActionHistorySection();
+                        ConsoleHelper.WriteWordWrapAt(78, 6, 37, $"{activePlayer.Name} played a", Color.White);
+                        ConsoleHelper.DrawBoxedWord(6 + activePlayer.Name.Length + 10, 36, selectedOption.Card.Value.ToString(), ColorConverter.GetConsoleColor(selectedOption.Card.Color));
+                        ConsoleHelper.WriteWordWrapAt(78, 6 + activePlayer.Name.Length + 10 + 3, 37, " to the Canvas", Color.White);
 
-                    //    WriteActionInputSectionBorder(Color.White);
-                    //    EraseActionInputSection();
-                    //    DrawPlayerBoards(red7Game);
-                    //    break;
-                    //}
+                        WriteActionInputSectionBorder(Color.White);
+                        EraseActionInputSection();
+                        DrawPlayerBoards(red7Game);
+
+                        EraseCanvas();
+                        DrawCanvas(red7Game);
+                        break;
+                    }
                 }
             }
         }

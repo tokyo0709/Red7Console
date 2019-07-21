@@ -127,7 +127,7 @@ namespace Red7.Core.Tests.Tests.GameLogicFunctions
             });
 
             // Act
-            var isWinning = GameLogic.IsWinningBlueRule(_activePlayerPalette, _opponentPalettes);
+            var isWinning = GameLogic.IsWinningVioletRule(_activePlayerPalette, _opponentPalettes);
 
             // Assert
             Assert.True(isWinning);

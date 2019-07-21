@@ -20,7 +20,7 @@ namespace Red7.Core.Helpers
             var activePlayerPalette = activePlayer.Palette.CloneJson();
             var opponentPalettes = game.Players.Where(x => !x.Active).Select(y => y.Palette).ToList();
 
-            return IsWinningPalette(game.Canvas.Cards.Last().Color, activePlayerPalette, opponentPalettes, colorRule);
+            return IsWinningPalette(canvasColorPlayed, activePlayerPalette, opponentPalettes, colorRule);
         }
 
         public static bool IsWinning(Red7Game game, Card cardPlayed)
@@ -153,30 +153,32 @@ namespace Red7.Core.Helpers
             // Most of One Color
 
             // Find the most frequent Color then if tied the highest value set
-            var activePlayerHighOneColorSet = activePlayerPalette.Cards
-                .GroupBy(x => x.Color)
-                .Select(group => new { Value = group.Key, Count = group.Count() })
-                .OrderByDescending(y => y.Count)
-                .ThenByDescending(z => z.Value)
-                .First();
+            var activePlayerStrongColorGroup = GetStrongestColorGroup(activePlayerPalette);
+            var activePlayerStrongestCard = activePlayerStrongColorGroup.MaxBy(y => y.Value).First();
 
             foreach (var palette in opponentPalettes)
             {
-                var currentPlayerHighOneColorSet = palette.Cards
-                    .GroupBy(x => x.Color)
-                    .Select(group => new { Value = group.Key, Count = group.Count() })
-                    .OrderByDescending(y => y.Count)
-                    .ThenByDescending(z => z.Value)
-                    .First();
+                var opponentStrongColorGroup = GetStrongestColorGroup(palette);
+                var opponentStrongestCard = opponentStrongColorGroup.MaxBy(x => x.Value).First();
 
-                if (currentPlayerHighOneColorSet.Count > activePlayerHighOneColorSet.Count) return false;
+                // Total number matching the rule
+                if (opponentStrongColorGroup.Count > activePlayerStrongColorGroup.Count) return false;
 
-                if (currentPlayerHighOneColorSet.Count == activePlayerHighOneColorSet.Count &&
-                    IsWinningColor(currentPlayerHighOneColorSet.Value, activePlayerHighOneColorSet.Value)) return false;
+                if (opponentStrongColorGroup.Count == activePlayerStrongColorGroup.Count)
+                {
+                    // Highest value comparison
+                    if (opponentStrongestCard.Value > activePlayerStrongestCard.Value) return false;
+
+                    // Color comparison
+                    if (opponentStrongestCard.Value == activePlayerStrongestCard.Value &&
+                        opponentStrongestCard.Color > activePlayerStrongestCard.Color) return false;
+                }
             }
 
             return true;
         }
+
+        
 
         public static bool IsWinningGreenRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
         {
@@ -360,6 +362,90 @@ namespace Red7.Core.Helpers
             }
 
             return listOfSequentialCards;
+        }
+
+        private static List<Card> GetStrongestColorGroup(Palette palette)
+        {
+            var listOfGroupedColors = new List<List<Card>>();
+            var orderedListOfGroupedColors = new List<List<Card>>();
+            var cardsOrderedByColor = palette.Cards
+                .OrderByDescending(x => x.Color)
+                .ToList();
+
+            var currentIndex = 0;
+
+            foreach (var card in cardsOrderedByColor)
+            {
+                // Check that we are still operating on the current sequential list
+                if (listOfGroupedColors.Count == 0)
+                {
+                    // Need to generate a new sequential list
+                    var newColorList = new List<Card>();
+                    newColorList.Add(card);
+
+                    listOfGroupedColors.Add(newColorList);
+                }
+                else
+                {
+                    // Get current list at index
+                    var currentList = listOfGroupedColors.ElementAt(currentIndex);
+
+                    // Add card to list if it is one below the last cards value
+                    if (card.Color == currentList.First().Color)
+                        currentList.Add(card);
+                    else // Increment index if different color
+                    {
+                        // Need to generate a new sequential list
+                        var newColorList = new List<Card>();
+                        newColorList.Add(card);
+
+                        listOfGroupedColors.Add(newColorList);
+                        currentIndex++;
+                    }
+                }
+            }
+
+            // Order grouped color lists
+            foreach (var colorList in listOfGroupedColors)
+            {
+                orderedListOfGroupedColors.Add(colorList
+                    .OrderByDescending(x => x.Value)
+                    .ToList());
+            }
+
+            // Groups of equal count
+            var highCountColorGroups = orderedListOfGroupedColors
+                .MaxBy(x => x.Count)
+                .ToList();
+
+            var strongestColorGroup = new List<List<Card>>();
+
+            // Check for high card or high color
+            if (highCountColorGroups.Count > 1)
+            {
+                var highValueCards = new List<Card>();
+
+                foreach (var group in highCountColorGroups)
+                {
+                    var highValueCard = group.MaxBy(x => x, new CardComparer()).First();
+                    highValueCards.Add(highValueCard);
+                }
+
+                var highColorCard = highValueCards.MaxBy(x => x, new CardComparer()).First();
+                foreach (var group in highCountColorGroups)
+                {
+                    if (group.Any(x => x.Color == highColorCard.Color && x.Value == highColorCard.Value))
+                        strongestColorGroup.Add(group);
+                }
+
+                if (strongestColorGroup.Count > 1 || strongestColorGroup.Count <= 0)
+                    throw new Exception("Must contain 1 element for the strongest color group.");
+            } else
+            {
+                strongestColorGroup.Add(highCountColorGroups.First());
+            }
+
+            return strongestColorGroup.First();
         }
     }
 }
