@@ -459,7 +459,24 @@ namespace Red7.ConsoleManager
                         EraseCanvas();
                         DrawCanvas(red7Game);
                         break;
+                    } else
+                    {
+                        EraseActionInputSection();
+                        ConsoleHelper.WriteWordWrapAt(78, 24, 42, "Illegal Move (Press any key to continue)", Color.Yellow);
+
+                        Console.ReadKey(true);
+                        EraseActionInputSection();
+
+                        ConsoleHelper.WriteWordWrapAt(78, 6, 42, "Play", Color.White);
+                        ConsoleHelper.DrawBoxedWord(11, 41, activeCard.Card.Value.ToString(), ColorConverter.GetConsoleColor(activeCard.Card.Color));
+                        ConsoleHelper.WriteWordWrapAt(78, 15, 42, "to the Canvas (Left and right arrow keys to select your card)", Color.White);
                     }
+                }
+                else if (keyInfo.Key == ConsoleKey.Escape)
+                {
+                    WriteActionInputSectionBorder(Color.White);
+                    EraseActionInputSection();
+                    break;
                 }
 
                 // Empty the buffer if necessary
@@ -534,6 +551,24 @@ namespace Red7.ConsoleManager
                         DrawPlayerBoards(red7Game);
                         break;
                     }
+                    else
+                    {
+                        EraseActionInputSection();
+                        ConsoleHelper.WriteWordWrapAt(78, 24, 42, "Illegal Move (Press any key to continue)", Color.Yellow);
+
+                        Console.ReadKey(true);
+                        EraseActionInputSection();
+
+                        ConsoleHelper.WriteWordWrapAt(78, 6, 42, "Play", Color.White);
+                        ConsoleHelper.DrawBoxedWord(11, 41, activeCard.Card.Value.ToString(), ColorConverter.GetConsoleColor(activeCard.Card.Color));
+                        ConsoleHelper.WriteWordWrapAt(78, 15, 42, "to your Palette (Left and right arrow keys to select your card)", Color.White);
+                    }
+                }
+                else if (keyInfo.Key == ConsoleKey.Escape)
+                {
+                    WriteActionInputSectionBorder(Color.White);
+                    EraseActionInputSection();
+                    break;
                 }
 
                 // Empty the buffer if necessary

@@ -212,6 +212,8 @@ namespace Red7.Core.Helpers
                 .ThenByDescending(z => z.Color)
                 .ToList();
 
+            if (activePlayerEvenCards.Count == 0) return false;
+
             foreach (var palette in opponentPalettes)
             {
                 var currentPlayerEvenCards = palette.Cards
@@ -221,6 +223,7 @@ namespace Red7.Core.Helpers
                     .ToList();
 
                 // Total number matching the rule
+                if (currentPlayerEvenCards.Count == 0) continue;
                 if (currentPlayerEvenCards.Count > activePlayerEvenCards.Count) return false;
 
                 // Highest value comparison
@@ -318,6 +321,8 @@ namespace Red7.Core.Helpers
                 .ThenByDescending(y => y.Color)
                 .ToList();
 
+            if (activePlayerHighestValueCardsBelowFour.Count == 0) return false;
+
             foreach (var palette in opponentPalettes)
             {
                 var opponentHighestValueCardsBelowFour = palette.Cards
@@ -327,6 +332,7 @@ namespace Red7.Core.Helpers
                     .ToList();
 
                 // Total number matching rule
+                if (opponentHighestValueCardsBelowFour.Count == 0) continue;
                 if (opponentHighestValueCardsBelowFour.Count > activePlayerHighestValueCardsBelowFour.Count) return false;
 
                 // Highest value matching rule
