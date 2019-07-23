@@ -115,6 +115,10 @@ namespace Red7.ConsoleManager
                             break;
                     }
                 }
+
+                // Empty the buffer if necessary
+                if (Console.KeyAvailable)
+                    Console.ReadKey(false);
             }
         }
 
@@ -186,6 +190,10 @@ namespace Red7.ConsoleManager
                             break;
                     }
                 }
+
+                // Empty the buffer if necessary
+                if (Console.KeyAvailable)
+                    Console.ReadKey(false);
             }
         }
 
@@ -453,6 +461,10 @@ namespace Red7.ConsoleManager
                         break;
                     }
                 }
+
+                // Empty the buffer if necessary
+                if (Console.KeyAvailable)
+                    Console.ReadKey(false);
             }
         }
 
@@ -523,6 +535,10 @@ namespace Red7.ConsoleManager
                         break;
                     }
                 }
+
+                // Empty the buffer if necessary
+                if (Console.KeyAvailable)
+                    Console.ReadKey(false);
             }
         }
 
