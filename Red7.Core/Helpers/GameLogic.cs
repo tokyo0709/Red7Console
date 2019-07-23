@@ -178,8 +178,6 @@ namespace Red7.Core.Helpers
             return true;
         }
 
-        
-
         public static bool IsWinningGreenRule(Palette activePlayerPalette, List<Palette> opponentPalettes)
         {
             // Most Even Cards
