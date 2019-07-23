@@ -130,6 +130,15 @@ namespace Red7.Core.Helpers
                 .ThenByDescending(z => z.Value)
                 .First();
 
+            var activePlayerHighOneNumberSetCards = activePlayerPalette.Cards
+                .Where(x => x.Value == activePlayerHighOneNumberSet.Value)
+                .ToList();
+
+            var activePlayerHighOneNumberSetHighestColor = activePlayerHighOneNumberSetCards
+                .OrderByDescending(x => x.Color)
+                .First()
+                .Color;
+
             foreach (var palette in opponentPalettes)
             {
                 var currentPlayerHighOneNumberSet = palette.Cards
@@ -139,10 +148,26 @@ namespace Red7.Core.Helpers
                     .ThenByDescending(z => z.Value)
                     .First();
 
+                var currentPlayerHighOneNumberSetCards = palette.Cards
+                    .Where(x => x.Value == currentPlayerHighOneNumberSet.Value)
+                    .ToList();
+
+                var currentPlayerHighOneNumberSetHighestColor = currentPlayerHighOneNumberSetCards
+                    .OrderByDescending(x => x.Color)
+                    .First()
+                    .Color;
+
+                // Total number matching the rule
                 if (currentPlayerHighOneNumberSet.Count > activePlayerHighOneNumberSet.Count) return false;
 
-                if (currentPlayerHighOneNumberSet.Count == activePlayerHighOneNumberSet.Count &&
-                    currentPlayerHighOneNumberSet.Value > activePlayerHighOneNumberSet.Value) return false;
+                if (currentPlayerHighOneNumberSet.Count == activePlayerHighOneNumberSet.Count)
+                {
+                    // Highest value comparison
+                    if (currentPlayerHighOneNumberSet.Value > activePlayerHighOneNumberSet.Value) return false;
+
+                    // Color comparison
+                    if (currentPlayerHighOneNumberSetHighestColor > activePlayerHighOneNumberSetHighestColor) return false;
+                }
             }
 
             return true;
