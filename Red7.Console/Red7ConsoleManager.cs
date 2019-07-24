@@ -184,7 +184,19 @@ namespace Red7.ConsoleManager
                             SelectCardToPlayToCanvas(game, activePlayer);
                             break;
                         case ActionOption.PlayToPaletteThenCanvas:
+
+                            if (activePlayer.Hand.Cards.Count < 2)
+                            {
+                                EraseActionInputSection();
+                                ConsoleHelper.WriteWordWrapAt(78, 24, 42, "Must have at least 2 cards (Press any key to continue)", Color.Yellow);
+
+                                Console.ReadKey(true);
+                                EraseActionInputSection();
+                                continue;
+                            }
+
                             SelectCardToPlayToPaletteThenCanvas(game, activePlayer);
+
                             break;
                         case ActionOption.Fold:
                             break;
