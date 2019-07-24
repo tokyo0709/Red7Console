@@ -35,16 +35,16 @@ namespace Red7.Core.Helpers
             return IsWinningPalette(game.Canvas.Cards.Last().Color, activePlayerPalette, opponentPalettes, colorRule);
         }
 
-        public static bool IsWinning(Red7Game game, Card cardPlayed, Card canvasColorPlayed)
+        public static bool IsWinning(Red7Game game, Card cardPlayed, Card canvasCardPlayed)
         {
-            var colorRule = ColorRules.GetRuleByColor(canvasColorPlayed.Color);
+            var colorRule = ColorRules.GetRuleByColor(canvasCardPlayed.Color);
             var activePlayer = game.Players.Where(x => x.Active).First();
 
             var activePlayerPalette = activePlayer.Palette.CloneJson();
             activePlayerPalette.AddCardToPalette(cardPlayed);
             var opponentPalettes = game.Players.Where(x => !x.Active).Select(y => y.Palette).ToList();
 
-            return IsWinningPalette(canvasColorPlayed.Color, activePlayerPalette, opponentPalettes, colorRule);
+            return IsWinningPalette(canvasCardPlayed.Color, activePlayerPalette, opponentPalettes, colorRule);
         }
 
         public static bool IsWinning(Color canvasColor, Palette activePlayerPalette, List<Palette> opponentPalettes)

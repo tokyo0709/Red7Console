@@ -33,7 +33,7 @@ namespace Red7.ConsoleManager.Models
         public HandMenuOption(Card card, bool active)
         {
             Card = card;
-            active = active;
+            Active = active;
         }
 
         public Card Card { get; }
